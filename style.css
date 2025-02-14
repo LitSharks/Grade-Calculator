@@ -19,6 +19,10 @@ h1, h2 {
   text-align: center;
 }
 
+p {
+  text-align: center;
+}
+
 label {
   display: block;
   margin-top: 10px;
@@ -37,15 +41,14 @@ input[type="text"] {
   margin-top: 10px;
 }
 
-/* Make each label & radio button pair appear inline, with spacing */
 .radio-group label {
   display: inline-block;
-  margin-right: 20px; /* Adjust as needed */
+  margin-right: 20px;
   cursor: pointer;
 }
 
 .radio-group input[type="radio"] {
-  margin-right: 5px; /* Space between the radio button and the text */
+  margin-right: 5px;
 }
 
 button {
