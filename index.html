@@ -12,17 +12,18 @@
     <!-- Step 1: Initial Setup -->
     <div id="step1">
       <form id="initialForm">
+        <p>Welcome to the grade calculator!</p>
         <label for="sectors">How many grade sectors do you want? (1-100):</label>
         <input type="number" id="sectors" name="sectors" min="1" max="100" required />
 
         <label>Do you want each grade sector to have equal weight?</label>
         <div class="radio-group">
           <label for="equalYes">
-            <input type="radio" id="equalYes" name="equalWeight" value="yes" checked />
+            <input type="radio" id="equalYes" name="equalWeight" value="y" checked />
             Yes
           </label>
           <label for="equalNo">
-            <input type="radio" id="equalNo" name="equalWeight" value="no" />
+            <input type="radio" id="equalNo" name="equalWeight" value="n" />
             No
           </label>
         </div>
@@ -31,27 +32,30 @@
       </form>
     </div>
 
-    <!-- Step 2: Sectors Details -->
+    <!-- Step 2: Sector Details -->
     <div id="step2" style="display: none;">
       <form id="sectorsForm">
-        <!-- Weights Section (only if not equal weighting) -->
+        <!-- Weights Section (only if custom weights are used) -->
         <div id="weightsSection" style="display: none;">
-          <h2>Enter weights for each sector</h2>
+          <h2>Enter Weights for Each Sector</h2>
           <div id="weightsInputs"></div>
-          <p class="hint">Note: The total weights must sum to 100.</p>
+          <p class="hint">Enter arbitrary weight values; they will be normalized automatically.</p>
         </div>
 
         <!-- Marks Section -->
-        <h2>Enter marks for each sector</h2>
+        <h2>Enter Marks for Each Sector</h2>
         <div id="marksInputs"></div>
 
-        <button type="submit">Calculate Final Grade</button>
+        <button type="submit">Calculate Grades</button>
       </form>
     </div>
 
-    <!-- Result Section -->
+    <!-- Results Section -->
     <div id="result" style="display: none;">
-      <h2>Your final grade is: <span id="finalGrade"></span>%</h2>
+      <h2>Your Calculated Grades:</h2>
+      <p id="weightedGradeResult"></p>
+      <p id="equalGradeResult"></p>
+      <p id="simpleAverageResult"></p>
       <button id="restart">Restart</button>
     </div>
   </div>
