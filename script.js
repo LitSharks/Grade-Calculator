@@ -1,6 +1,6 @@
 // script.js
 
-// Step 1: Handle initial form submission to set up the sectors and weighting option
+// Event listener for the initial form
 document.getElementById("initialForm").addEventListener("submit", function(event) {
   event.preventDefault();
   
@@ -16,7 +16,7 @@ document.getElementById("initialForm").addEventListener("submit", function(event
   document.getElementById("step1").style.display = "none";
   document.getElementById("step2").style.display = "block";
   
-  // Build dynamic weight inputs if custom weights are used
+  // Build weight inputs if custom weights are chosen
   const weightsSection = document.getElementById("weightsSection");
   const weightsInputs = document.getElementById("weightsInputs");
   weightsInputs.innerHTML = "";
@@ -35,7 +35,7 @@ document.getElementById("initialForm").addEventListener("submit", function(event
     weightsSection.style.display = "none";
   }
   
-  // Build dynamic mark inputs for each sector
+  // Build mark inputs for each sector
   const marksInputs = document.getElementById("marksInputs");
   marksInputs.innerHTML = "";
   
@@ -52,10 +52,11 @@ document.getElementById("initialForm").addEventListener("submit", function(event
   }
 });
 
-// Step 2: Handle the sectors form submission and calculate grades
+// Event listener for the sectors form (Calculate Grades)
 document.getElementById("sectorsForm").addEventListener("submit", function(event) {
   event.preventDefault();
-  
+  console.log("sectorsForm submit triggered"); // Debug log
+
   const sectors = parseInt(document.getElementById("sectors").value);
   const defaultWeight = document.querySelector('input[name="equalWeight"]:checked').value;
   
@@ -64,7 +65,7 @@ document.getElementById("sectorsForm").addEventListener("submit", function(event
   let sectorMaxMarks = [];
   let sectorAchievedMarks = [];
   
-  // For custom weights: get user input and normalize the weights
+  // If using custom weights, retrieve and normalize them
   if (defaultWeight === "n") {
     let totalWeight = 0;
     for (let i = 0; i < sectors; i++) {
@@ -77,13 +78,13 @@ document.getElementById("sectorsForm").addEventListener("submit", function(event
       weights.push(weightValue);
       totalWeight += weightValue;
     }
-    // Normalize the weights
+    // Normalize the weights so they sum to 1
     for (let i = 0; i < sectors; i++) {
       weights[i] = weights[i] / totalWeight;
     }
   }
   
-  // Get marks for each sector and compute normalized grades
+  // Retrieve marks and calculate normalized grades
   for (let i = 0; i < sectors; i++) {
     const maxMark = parseFloat(document.getElementById(`maxMark${i}`).value);
     const achievedMark = parseFloat(document.getElementById(`achievedMark${i}`).value);
@@ -102,7 +103,7 @@ document.getElementById("sectorsForm").addEventListener("submit", function(event
   
   // Calculate the three grade results
   
-  // 1. Weighted Final Grade (only if custom weights are used)
+  // 1. Weighted Final Grade (if using custom weights)
   let weightedFinalGrade;
   if (defaultWeight === "n") {
     weightedFinalGrade = 0;
@@ -118,6 +119,8 @@ document.getElementById("sectorsForm").addEventListener("submit", function(event
   // 3. Simple Average Final Grade: total achieved marks divided by total maximum marks, scaled to percentage
   const simpleAverageGrade = (sectorAchievedMarks.reduce((sum, m) => sum + m, 0) / 
                               sectorMaxMarks.reduce((sum, m) => sum + m, 0)) * 100;
+  
+  console.log("Grades calculated:", { weightedFinalGrade, equalFinalGrade, simpleAverageGrade });
   
   // Display the results
   document.getElementById("step2").style.display = "none";
