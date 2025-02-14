@@ -145,3 +145,50 @@ document.getElementById("restart").addEventListener("click", function () {
   document.getElementById("step2").style.display = "none";
   document.getElementById("result").style.display = "none";
 });
+
+// ------------------------------
+// Theme Toggle and Random Angled Text
+// ------------------------------
+
+// Function to apply the theme
+function applyTheme(theme) {
+  if (theme === "dark") {
+    document.body.classList.add("dark-mode");
+  } else {
+    document.body.classList.remove("dark-mode");
+  }
+}
+
+// Check for saved theme or system preference
+let savedTheme = localStorage.getItem("theme");
+if (savedTheme) {
+  applyTheme(savedTheme);
+} else {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    applyTheme("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    applyTheme("light");
+    localStorage.setItem("theme", "light");
+  }
+}
+
+// Theme toggle button event
+document.getElementById("themeToggle").addEventListener("click", function() {
+  if (document.body.classList.contains("dark-mode")) {
+    applyTheme("light");
+    localStorage.setItem("theme", "light");
+  } else {
+    applyTheme("dark");
+    localStorage.setItem("theme", "dark");
+  }
+});
+
+// Set random angled text from a predefined list
+const phrases = [
+  "Made by a zaga student",
+  "because some people don't understand grades",
+  "brrrrrrrrrrrrrr"
+];
+const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+document.getElementById("angledText").textContent = randomPhrase;
