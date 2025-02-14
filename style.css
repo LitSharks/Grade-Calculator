@@ -1,53 +1,153 @@
-/* styles.css */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
-  margin: 0;
-  padding: 0;
+// Add event listeners for the buttons
+document.getElementById('next-button').addEventListener('click', generateSectorInputs);
+document.getElementById('calculate-button').addEventListener('click', calculateGrades);
+
+function generateSectorInputs() {
+  // Validate number of sectors
+  const sectorsInput = document.getElementById('sectors');
+  const sectors = parseInt(sectorsInput.value);
+  if (isNaN(sectors) || sectors < 1 || sectors > 100) {
+    alert('Please enter a valid number of sectors between 1 and 100.');
+    return;
+  }
+  
+  // Check if equal weight is selected
+  const equalWeight = document.querySelector('input[name="equalWeight"]:checked').value;
+  
+  // Hide step1 and show step2
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+  
+  // If custom weights are required, show weight inputs container
+  if (equalWeight === 'no') {
+    document.getElementById('custom-weights-container').style.display = 'block';
+    const weightsDiv = document.getElementById('weights-inputs');
+    weightsDiv.innerHTML = ''; // Clear previous inputs if any
+    for (let i = 0; i < sectors; i++) {
+      const weightLabel = document.createElement('label');
+      weightLabel.textContent = `Enter weight for sector ${i + 1}:`;
+      const weightInput = document.createElement('input');
+      weightInput.type = 'number';
+      weightInput.step = 'any';
+      weightInput.required = true;
+      weightInput.id = `weight-${i}`;
+      weightLabel.appendChild(weightInput);
+      weightsDiv.appendChild(weightLabel);
+    }
+  }
+  
+  // Generate inputs for marks for each sector
+  const sectorsDiv = document.getElementById('sectors-inputs');
+  sectorsDiv.innerHTML = ''; // Clear previous inputs if any
+  for (let i = 0; i < sectors; i++) {
+    const sectorDiv = document.createElement('div');
+    sectorDiv.className = 'sector';
+    
+    const header = document.createElement('h3');
+    header.textContent = `Sector ${i + 1}`;
+    sectorDiv.appendChild(header);
+    
+    // Maximum mark input
+    const maxLabel = document.createElement('label');
+    maxLabel.textContent = `Enter maximum possible mark for sector ${i + 1}:`;
+    const maxInput = document.createElement('input');
+    maxInput.type = 'number';
+    maxInput.step = 'any';
+    maxInput.required = true;
+    maxInput.id = `max-${i}`;
+    maxLabel.appendChild(maxInput);
+    sectorDiv.appendChild(maxLabel);
+    
+    // Achieved mark input
+    const achievedLabel = document.createElement('label');
+    achievedLabel.textContent = `Enter your achieved mark for sector ${i + 1}:`;
+    const achievedInput = document.createElement('input');
+    achievedInput.type = 'number';
+    achievedInput.step = 'any';
+    achievedInput.required = true;
+    achievedInput.id = `achieved-${i}`;
+    achievedLabel.appendChild(achievedInput);
+    sectorDiv.appendChild(achievedLabel);
+    
+    sectorsDiv.appendChild(sectorDiv);
+  }
 }
 
-.container {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-h1, h2 {
-  text-align: center;
-}
-
-label {
-  display: block;
-  margin-top: 10px;
-}
-
-input[type="number"],
-input[type="text"],
-button {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  margin-top: 15px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-.sector {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-top: 15px;
-  border-radius: 4px;
+function calculateGrades() {
+  const sectors = parseInt(document.getElementById('sectors').value);
+  const equalWeight = document.querySelector('input[name="equalWeight"]:checked').value;
+  
+  let weights = [];
+  if (equalWeight === 'no') {
+    // Get custom weights
+    for (let i = 0; i < sectors; i++) {
+      const weightVal = parseFloat(document.getElementById(`weight-${i}`).value);
+      if (isNaN(weightVal) || weightVal <= 0) {
+        alert(`Please enter a valid weight for sector ${i + 1}.`);
+        return;
+      }
+      weights.push(weightVal);
+    }
+    // Normalize weights so that they sum to 1
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+    weights = weights.map(w => w / totalWeight);
+  }
+  
+  let grades = [];
+  let sectorMaxMarks = [];
+  let sectorAchievedMarks = [];
+  
+  for (let i = 0; i < sectors; i++) {
+    const maxVal = parseFloat(document.getElementById(`max-${i}`).value);
+    const achievedVal = parseFloat(document.getElementById(`achieved-${i}`).value);
+    
+    if (isNaN(maxVal) || maxVal <= 0) {
+      alert(`Please enter a valid maximum mark for sector ${i + 1}.`);
+      return;
+    }
+    if (isNaN(achievedVal) || achievedVal < 0) {
+      alert(`Please enter a valid achieved mark for sector ${i + 1}.`);
+      return;
+    }
+    
+    sectorMaxMarks.push(maxVal);
+    sectorAchievedMarks.push(achievedVal);
+    grades.push(achievedVal / maxVal);
+  }
+  
+  // Calculate weighted final grade if custom weights are provided
+  let weightedFinalGrade = null;
+  if (equalWeight === 'no') {
+    weightedFinalGrade = 0;
+    for (let i = 0; i < sectors; i++) {
+      weightedFinalGrade += grades[i] * weights[i];
+    }
+    weightedFinalGrade *= 100;
+  }
+  
+  // Calculate equal weight final grade
+  const equalWeights = Array(sectors).fill(1 / sectors);
+  let equalFinalGrade = 0;
+  for (let i = 0; i < sectors; i++) {
+    equalFinalGrade += grades[i] * equalWeights[i];
+  }
+  equalFinalGrade *= 100;
+  
+  // Calculate simple average grade
+  const totalAchieved = sectorAchievedMarks.reduce((sum, mark) => sum + mark, 0);
+  const totalMax = sectorMaxMarks.reduce((sum, mark) => sum + mark, 0);
+  const simpleAverageGrade = (totalAchieved / totalMax) * 100;
+  
+  // Display results
+  document.getElementById('results').style.display = 'block';
+  if (weightedFinalGrade !== null) {
+    document.getElementById('weighted-grade').textContent = `1. Weighted Final Grade: ${weightedFinalGrade.toFixed(2)}% (based on your assigned weights)`;
+  } else {
+    document.getElementById('weighted-grade').textContent = `1. Weighted Final Grade: Not applicable (equal weights used)`;
+  }
+  document.getElementById('equal-grade').textContent = `2. Equal Weight Final Grade: ${equalFinalGrade.toFixed(2)}% (assuming all sectors contribute equally)`;
+  document.getElementById('simple-average-grade').textContent = `3. Simple Average Final Grade: ${simpleAverageGrade.toFixed(2)}% (sum of all marks divided by total possible marks)`;
+  
+  // Optionally, scroll to the results
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 }
