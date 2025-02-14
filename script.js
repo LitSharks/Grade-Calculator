@@ -1,7 +1,7 @@
 // script.js
 
-// Event listener for the initial form
-document.getElementById("initialForm").addEventListener("submit", function(event) {
+// Step 1: Handle initial form submission
+document.getElementById("initialForm").addEventListener("submit", function (event) {
   event.preventDefault();
   
   const sectors = parseInt(document.getElementById("sectors").value);
@@ -10,24 +10,24 @@ document.getElementById("initialForm").addEventListener("submit", function(event
     return;
   }
   
-  const defaultWeight = document.querySelector('input[name="equalWeight"]:checked').value;
+  const equalWeight = document.querySelector('input[name="equalWeight"]:checked').value;
   
-  // Hide Step 1 and show Step 2
+  // Hide step 1 and show step 2
   document.getElementById("step1").style.display = "none";
   document.getElementById("step2").style.display = "block";
   
-  // Build weight inputs if custom weights are chosen
+  // Set up the weights section if custom weighting is selected
   const weightsSection = document.getElementById("weightsSection");
   const weightsInputs = document.getElementById("weightsInputs");
   weightsInputs.innerHTML = "";
   
-  if (defaultWeight === "n") {
+  if (equalWeight === "n") {
     weightsSection.style.display = "block";
     for (let i = 0; i < sectors; i++) {
       const div = document.createElement("div");
       div.innerHTML = `
         <label for="weight${i}">Weight for sector ${i + 1}:</label>
-        <input type="number" id="weight${i}" name="weight${i}" step="any" required>
+        <input type="number" id="weight${i}" name="weight${i}" min="0" step="any" required>
       `;
       weightsInputs.appendChild(div);
     }
@@ -35,110 +35,110 @@ document.getElementById("initialForm").addEventListener("submit", function(event
     weightsSection.style.display = "none";
   }
   
-  // Build mark inputs for each sector
+  // Set up the marks section for each sector
   const marksInputs = document.getElementById("marksInputs");
   marksInputs.innerHTML = "";
-  
   for (let i = 0; i < sectors; i++) {
     const div = document.createElement("div");
     div.innerHTML = `
       <h3>Sector ${i + 1}</h3>
-      <label for="maxMark${i}">Maximum possible mark:</label>
-      <input type="number" id="maxMark${i}" name="maxMark${i}" step="any" required>
-      <label for="achievedMark${i}">Your achieved mark (out of maximum):</label>
-      <input type="number" id="achievedMark${i}" name="achievedMark${i}" step="any" required>
+      <label for="maxMark${i}">Maximum possible mark for sector ${i + 1}:</label>
+      <input type="number" id="maxMark${i}" name="maxMark${i}" min="0" step="any" required>
+      <label for="mark${i}">Your mark for sector ${i + 1}:</label>
+      <input type="number" id="mark${i}" name="mark${i}" min="0" step="any" required>
     `;
     marksInputs.appendChild(div);
   }
 });
 
-// Event listener for the sectors form (Calculate Grades)
-document.getElementById("sectorsForm").addEventListener("submit", function(event) {
+// Step 2: Handle sectors form submission and grade calculation
+document.getElementById("sectorsForm").addEventListener("submit", function (event) {
   event.preventDefault();
-  console.log("sectorsForm submit triggered"); // Debug log
-
+  
   const sectors = parseInt(document.getElementById("sectors").value);
-  const defaultWeight = document.querySelector('input[name="equalWeight"]:checked').value;
+  const equalWeight = document.querySelector('input[name="equalWeight"]:checked').value;
   
   let weights = [];
+  let normalizedWeights = [];
   let grades = [];
   let sectorMaxMarks = [];
   let sectorAchievedMarks = [];
   
-  // If using custom weights, retrieve and normalize them
-  if (defaultWeight === "n") {
+  // If using custom weighting, get and normalize weights
+  if (equalWeight === "n") {
     let totalWeight = 0;
     for (let i = 0; i < sectors; i++) {
-      const weightInput = document.getElementById(`weight${i}`);
-      const weightValue = parseFloat(weightInput.value);
-      if (isNaN(weightValue) || weightValue < 0) {
+      let w = parseFloat(document.getElementById(`weight${i}`).value);
+      if (isNaN(w) || w < 0) {
         alert(`Please enter a valid weight for sector ${i + 1}.`);
         return;
       }
-      weights.push(weightValue);
-      totalWeight += weightValue;
+      weights.push(w);
+      totalWeight += w;
     }
-    // Normalize the weights so they sum to 1
-    for (let i = 0; i < sectors; i++) {
-      weights[i] = weights[i] / totalWeight;
+    if (totalWeight === 0) {
+      alert("Total weight cannot be zero.");
+      return;
     }
+    normalizedWeights = weights.map(w => w / totalWeight);
+  } else {
+    // For equal weighting, we simply use an array of ones (but weighted grade will be marked as not applicable)
+    weights = Array(sectors).fill(1.0);
   }
   
-  // Retrieve marks and calculate normalized grades
+  // Get marks and calculate normalized grades for each sector
   for (let i = 0; i < sectors; i++) {
-    const maxMark = parseFloat(document.getElementById(`maxMark${i}`).value);
-    const achievedMark = parseFloat(document.getElementById(`achievedMark${i}`).value);
+    let maxMark = parseFloat(document.getElementById(`maxMark${i}`).value);
+    let achievedMark = parseFloat(document.getElementById(`mark${i}`).value);
+    
     if (isNaN(maxMark) || maxMark <= 0) {
-      alert(`Please enter a valid maximum mark for sector ${i + 1}.`);
+      alert(`Please enter a valid maximum mark (> 0) for sector ${i + 1}.`);
       return;
     }
     if (isNaN(achievedMark) || achievedMark < 0 || achievedMark > maxMark) {
-      alert(`Please enter a valid achieved mark for sector ${i + 1} (0 to ${maxMark}).`);
+      alert(`Please enter a valid mark for sector ${i + 1}. It should be between 0 and ${maxMark}.`);
       return;
     }
+    
     sectorMaxMarks.push(maxMark);
     sectorAchievedMarks.push(achievedMark);
     grades.push(achievedMark / maxMark);
   }
   
-  // Calculate the three grade results
+  // Calculate the Equal Weight Final Grade (each sector contributes equally)
+  let equalFinalGrade = (grades.reduce((acc, curr) => acc + curr, 0) / sectors) * 100;
   
-  // 1. Weighted Final Grade (if using custom weights)
-  let weightedFinalGrade;
-  if (defaultWeight === "n") {
-    weightedFinalGrade = 0;
-    for (let i = 0; i < sectors; i++) {
-      weightedFinalGrade += grades[i] * weights[i];
-    }
-    weightedFinalGrade = weightedFinalGrade * 100;
+  // Calculate the Weighted Final Grade (only if custom weights were provided)
+  let weightedFinalGrade = null;
+  if (equalWeight === "n") {
+    weightedFinalGrade = grades.reduce((acc, curr, index) => acc + curr * normalizedWeights[index], 0) * 100;
   }
   
-  // 2. Equal Weight Final Grade: average of normalized grades, scaled to percentage
-  const equalFinalGrade = (grades.reduce((sum, g) => sum + g, 0) / sectors) * 100;
-  
-  // 3. Simple Average Final Grade: total achieved marks divided by total maximum marks, scaled to percentage
-  const simpleAverageGrade = (sectorAchievedMarks.reduce((sum, m) => sum + m, 0) / 
-                              sectorMaxMarks.reduce((sum, m) => sum + m, 0)) * 100;
-  
-  console.log("Grades calculated:", { weightedFinalGrade, equalFinalGrade, simpleAverageGrade });
+  // Calculate the Simple Average Final Grade (total achieved marks divided by total maximum marks)
+  let totalAchieved = sectorAchievedMarks.reduce((acc, curr) => acc + curr, 0);
+  let totalMax = sectorMaxMarks.reduce((acc, curr) => acc + curr, 0);
+  let simpleAverageGrade = (totalAchieved / totalMax) * 100;
   
   // Display the results
   document.getElementById("step2").style.display = "none";
   document.getElementById("result").style.display = "block";
   
-  const weightedResultElem = document.getElementById("weightedGradeResult");
-  if (defaultWeight === "n") {
-    weightedResultElem.textContent = `1. Weighted Final Grade: ${weightedFinalGrade.toFixed(2)}% (based on your assigned weights)`;
+  const weightedGradeElem = document.getElementById("weightedGrade");
+  const equalGradeElem = document.getElementById("equalGrade");
+  const simpleAverageGradeElem = document.getElementById("simpleAverageGrade");
+  
+  if (weightedFinalGrade !== null) {
+    weightedGradeElem.textContent = `1. Weighted Final Grade: ${weightedFinalGrade.toFixed(2)}% (based on your assigned weights)`;
   } else {
-    weightedResultElem.textContent = `1. Weighted Final Grade: Not applicable (equal weights used)`;
+    weightedGradeElem.textContent = `1. Weighted Final Grade: Not applicable (equal weights used)`;
   }
   
-  document.getElementById("equalGradeResult").textContent = `2. Equal Weight Final Grade: ${equalFinalGrade.toFixed(2)}% (assuming all sectors contribute equally)`;
-  document.getElementById("simpleAverageResult").textContent = `3. Simple Average Final Grade: ${simpleAverageGrade.toFixed(2)}% (sum of all marks divided by total possible marks)`;
+  equalGradeElem.textContent = `2. Equal Weight Final Grade: ${equalFinalGrade.toFixed(2)}% (assuming all sectors contribute equally)`;
+  simpleAverageGradeElem.textContent = `3. Simple Average Final Grade: ${simpleAverageGrade.toFixed(2)}% (sum of all marks divided by total possible marks)`;
 });
 
-// Restart the calculator
-document.getElementById("restart").addEventListener("click", function() {
+// Restart the calculator and reset forms
+document.getElementById("restart").addEventListener("click", function () {
   document.getElementById("initialForm").reset();
   document.getElementById("sectorsForm").reset();
   document.getElementById("step1").style.display = "block";
