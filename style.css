@@ -1,5 +1,3 @@
-/* style.css */
-
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
@@ -13,6 +11,7 @@ body {
   max-width: 600px;
   margin: auto;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative; /* so that the theme toggle can be positioned relative to container */
 }
 
 h1, h2 {
@@ -67,4 +66,57 @@ button:hover {
   font-size: 0.9em;
   color: #555;
   margin-top: 5px;
+}
+
+/* Theme Toggle Button Style */
+.theme-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  font-size: 0.9em;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+body.dark-mode .container {
+  background-color: #1e1e1e;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+body.dark-mode input,
+body.dark-mode button {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #555;
+}
+body.dark-mode button:hover {
+  background-color: #555;
+}
+
+/* Angled Text Style */
+.angled-text {
+  position: fixed;
+  top: 20px;
+  left: -40px;
+  transform: rotate(-45deg);
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #555;
+  pointer-events: none;
+}
+
+/* PayPal Link Style */
+.paypal-link {
+  position: fixed;
+  bottom: 5px;
+  left: 5px;
+  font-size: 10px;
+  color: #999;
+  text-decoration: none;
+}
+.paypal-link:hover {
+  text-decoration: underline;
 }
