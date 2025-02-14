@@ -1,123 +1,68 @@
-import React, { useState } from "react";
+document.getElementById("sectors").addEventListener("input", updateInputs);
+document.getElementById("equalWeight").addEventListener("change", updateInputs);
 
-const GradeCalculator = () => {
-    const [sectors, setSectors] = useState(1);
-    const [defaultWeight, setDefaultWeight] = useState(true);
-    const [weights, setWeights] = useState(new Array(1).fill(1));
-    const [maxMarks, setMaxMarks] = useState(new Array(1).fill(100));
-    const [achievedMarks, setAchievedMarks] = useState(new Array(1).fill(0));
-    const [finalGrades, setFinalGrades] = useState(null);
+function updateInputs() {
+    let sectorCount = parseInt(document.getElementById("sectors").value);
+    let useEqualWeights = document.getElementById("equalWeight").value === "yes";
+    
+    let weightsContainer = document.getElementById("weightsContainer");
+    let marksContainer = document.getElementById("marksContainer");
+    
+    weightsContainer.innerHTML = "";
+    marksContainer.innerHTML = "";
 
-    // Handle sector count change
-    const handleSectorChange = (e) => {
-        let newSectors = Number(e.target.value);
-        setSectors(newSectors);
-        setWeights(new Array(newSectors).fill(1));
-        setMaxMarks(new Array(newSectors).fill(100));
-        setAchievedMarks(new Array(newSectors).fill(0));
-    };
-
-    const handleWeightChoice = (e) => {
-        setDefaultWeight(e.target.value === "yes");
-    };
-
-    const handleMaxMarkChange = (index, value) => {
-        let newMaxMarks = [...maxMarks];
-        newMaxMarks[index] = Number(value);
-        setMaxMarks(newMaxMarks);
-    };
-
-    const handleAchievedMarkChange = (index, value) => {
-        let newAchievedMarks = [...achievedMarks];
-        newAchievedMarks[index] = Number(value);
-        setAchievedMarks(newAchievedMarks);
-    };
-
-    const handleWeightChange = (index, value) => {
-        let newWeights = [...weights];
-        newWeights[index] = Number(value);
-        setWeights(newWeights);
-    };
-
-    const calculateGrades = () => {
-        let normalizedWeights;
-        if (defaultWeight) {
-            normalizedWeights = Array(sectors).fill(1 / sectors);
-        } else {
-            const totalWeight = weights.reduce((a, b) => a + b, 0);
-            normalizedWeights = weights.map(w => w / totalWeight);
+    for (let i = 0; i < sectorCount; i++) {
+        if (!useEqualWeights) {
+            let weightInput = document.createElement("input");
+            weightInput.type = "number";
+            weightInput.placeholder = `Weight for Sector ${i + 1}`;
+            weightInput.classList.add("weight");
+            weightsContainer.appendChild(weightInput);
         }
 
-        const normalizedGrades = achievedMarks.map((mark, i) => mark / maxMarks[i]);
-        const weightedFinalGrade = normalizedGrades.reduce((sum, grade, i) => sum + (grade * normalizedWeights[i]), 0) * 100;
-        const equalFinalGrade = normalizedGrades.reduce((sum, grade) => sum + grade, 0) / sectors * 100;
-        const simpleAverageGrade = (achievedMarks.reduce((a, b) => a + b, 0) / maxMarks.reduce((a, b) => a + b, 0)) * 100;
+        let maxMarkInput = document.createElement("input");
+        maxMarkInput.type = "number";
+        maxMarkInput.placeholder = `Max Mark for Sector ${i + 1}`;
+        maxMarkInput.classList.add("maxMark");
+        marksContainer.appendChild(maxMarkInput);
 
-        setFinalGrades({
-            weightedFinalGrade: isNaN(weightedFinalGrade) ? 0 : weightedFinalGrade,
-            equalFinalGrade: isNaN(equalFinalGrade) ? 0 : equalFinalGrade,
-            simpleAverageGrade: isNaN(simpleAverageGrade) ? 0 : simpleAverageGrade
+        let achievedMarkInput = document.createElement("input");
+        achievedMarkInput.type = "number";
+        achievedMarkInput.placeholder = `Your Mark for Sector ${i + 1}`;
+        achievedMarkInput.classList.add("achievedMark");
+        marksContainer.appendChild(achievedMarkInput);
+    }
+}
+
+function calculateGrades() {
+    let sectorCount = parseInt(document.getElementById("sectors").value);
+    let useEqualWeights = document.getElementById("equalWeight").value === "yes";
+
+    let weights = [];
+    if (!useEqualWeights) {
+        document.querySelectorAll(".weight").forEach(input => {
+            weights.push(parseFloat(input.value) || 0);
         });
-    };
+        let totalWeight = weights.reduce((a, b) => a + b, 0);
+        weights = weights.map(w => w / totalWeight);
+    } else {
+        weights = new Array(sectorCount).fill(1 / sectorCount);
+    }
 
-    return (
-        <div className="calculator">
-            <h1>Grade Calculator</h1>
-            <label>Number of Sectors:</label>
-            <input type="number" min="1" max="100" value={sectors} onChange={handleSectorChange} />
+    let maxMarks = [];
+    let achievedMarks = [];
+    document.querySelectorAll(".maxMark").forEach(input => maxMarks.push(parseFloat(input.value) || 1));
+    document.querySelectorAll(".achievedMark").forEach(input => achievedMarks.push(parseFloat(input.value) || 0));
 
-            <label>Equal Weight for Each Sector?</label>
-            <select onChange={handleWeightChoice} value={defaultWeight ? "yes" : "no"}>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-            </select>
+    let normalizedGrades = achievedMarks.map((mark, i) => mark / maxMarks[i]);
 
-            {/* If equal weights are NOT used, allow weight input */}
-            {!defaultWeight && (
-                <div>
-                    <h2>Enter Weights</h2>
-                    {weights.map((_, i) => (
-                        <input
-                            key={i}
-                            type="number"
-                            placeholder={`Weight ${i + 1}`}
-                            value={weights[i]}
-                            onChange={(e) => handleWeightChange(i, e.target.value)}
-                        />
-                    ))}
-                </div>
-            )}
+    let weightedFinalGrade = normalizedGrades.reduce((sum, grade, i) => sum + (grade * weights[i]), 0) * 100;
+    let equalFinalGrade = normalizedGrades.reduce((sum, grade) => sum + grade, 0) / sectorCount * 100;
+    let simpleAverageGrade = (achievedMarks.reduce((a, b) => a + b, 0) / maxMarks.reduce((a, b) => a + b, 0)) * 100;
 
-            <h2>Enter Marks</h2>
-            {maxMarks.map((_, i) => (
-                <div key={i}>
-                    <input
-                        type="number"
-                        placeholder={`Max Mark ${i + 1}`}
-                        value={maxMarks[i]}
-                        onChange={(e) => handleMaxMarkChange(i, e.target.value)}
-                    />
+    document.getElementById("weightedGrade").textContent = weightedFinalGrade.toFixed(2) + "%";
+    document.getElementById("equalGrade").textContent = equalFinalGrade.toFixed(2) + "%";
+    document.getElementById("simpleGrade").textContent = simpleAverageGrade.toFixed(2) + "%";
+}
 
-                    <input
-                        type="number"
-                        placeholder={`Your Mark ${i + 1}`}
-                        value={achievedMarks[i]}
-                        onChange={(e) => handleAchievedMarkChange(i, e.target.value)}
-                    />
-                </div>
-            ))}
-
-            <button onClick={calculateGrades}>Calculate</button>
-
-            {finalGrades && (
-                <div>
-                    <p>Weighted Final Grade: {finalGrades.weightedFinalGrade.toFixed(2)}%</p>
-                    <p>Equal Weight Final Grade: {finalGrades.equalFinalGrade.toFixed(2)}%</p>
-                    <p>Simple Average Grade: {finalGrades.simpleAverageGrade.toFixed(2)}%</p>
-                </div>
-            )}
-        </div>
-    );
-};
-
-export default GradeCalculator;
+updateInputs();
