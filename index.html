@@ -17,10 +17,14 @@
 
         <label>Do you want each grade sector to have equal weight?</label>
         <div class="radio-group">
-          <input type="radio" id="equalYes" name="equalWeight" value="yes" checked />
-          <label for="equalYes">Yes</label>
-          <input type="radio" id="equalNo" name="equalWeight" value="no" />
-          <label for="equalNo">No</label>
+          <label for="equalYes">
+            <input type="radio" id="equalYes" name="equalWeight" value="yes" checked />
+            Yes
+          </label>
+          <label for="equalNo">
+            <input type="radio" id="equalNo" name="equalWeight" value="no" />
+            No
+          </label>
         </div>
 
         <button type="submit">Continue</button>
@@ -34,7 +38,7 @@
         <div id="weightsSection" style="display: none;">
           <h2>Enter weights for each sector</h2>
           <div id="weightsInputs"></div>
-          <p class="hint">Note: The weights must sum to 100.</p>
+          <p class="hint">Note: The total weights must sum to 100.</p>
         </div>
 
         <!-- Marks Section -->
