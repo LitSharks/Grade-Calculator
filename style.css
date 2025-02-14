@@ -37,6 +37,17 @@ input[type="text"] {
   margin-top: 10px;
 }
 
+/* Make each label & radio button pair appear inline, with spacing */
+.radio-group label {
+  display: inline-block;
+  margin-right: 20px; /* Adjust as needed */
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+  margin-right: 5px; /* Space between the radio button and the text */
+}
+
 button {
   margin-top: 15px;
   padding: 10px 20px;
