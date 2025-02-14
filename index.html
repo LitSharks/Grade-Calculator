@@ -1,52 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
   <title>Grade Calculator</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Welcome to the Grade Calculator!</h1>
+    <h1>Grade Calculator</h1>
     
-    <!-- Step 1: Basic Settings -->
+    <!-- Step 1: Initial Setup -->
     <div id="step1">
-      <label for="sectors">How many grade sectors do you want? (1-100):</label>
-      <input type="number" id="sectors" name="sectors" min="1" max="100" required>
-      
-      <p>Do you want each grade sector to have equal weight?</p>
-      <label>
-        <input type="radio" name="equalWeight" value="yes" checked> Yes
-      </label>
-      <label>
-        <input type="radio" name="equalWeight" value="no"> No
-      </label>
-      
-      <button id="next-button">Next</button>
+      <form id="initialForm">
+        <label for="sectors">How many grade sectors do you want? (1-100):</label>
+        <input type="number" id="sectors" name="sectors" min="1" max="100" required />
+
+        <label>Do you want each grade sector to have equal weight?</label>
+        <div class="radio-group">
+          <label for="equalYes">
+            <input type="radio" id="equalYes" name="equalWeight" value="y" checked />
+            Yes
+          </label>
+          <label for="equalNo">
+            <input type="radio" id="equalNo" name="equalWeight" value="n" />
+            No
+          </label>
+        </div>
+
+        <button type="submit">Continue</button>
+      </form>
     </div>
     
-    <!-- Step 2: Sector Inputs -->
-    <div id="step2" style="display:none;">
-      <div id="custom-weights-container" style="display:none;">
-        <p>Enter weights for each sector (arbitrary units, will be normalized):</p>
-        <div id="weights-inputs"></div>
-      </div>
-      
-      <div id="marks-container">
-        <p>Enter marks for each sector:</p>
-        <div id="sectors-inputs"></div>
-      </div>
-      
-      <button id="calculate-button">Calculate Grades</button>
+    <!-- Step 2: Input Weights and Marks -->
+    <div id="step2" style="display: none;">
+      <form id="sectorsForm">
+        <!-- Weights Section (only if not equal weighting) -->
+        <div id="weightsSection" style="display: none;">
+          <h2>Enter Weights for Each Sector</h2>
+          <div id="weightsInputs"></div>
+          <p class="hint">Enter weights for each sector (arbitrary units, will be normalized).</p>
+        </div>
+
+        <!-- Marks Section -->
+        <h2>Enter Marks for Each Sector</h2>
+        <div id="marksInputs"></div>
+
+        <button type="submit">Calculate Grades</button>
+      </form>
     </div>
     
-    <!-- Results -->
-    <div id="results" style="display:none;">
-      <h2>Your calculated grades are as follows:</h2>
-      <p id="weighted-grade"></p>
-      <p id="equal-grade"></p>
-      <p id="simple-average-grade"></p>
+    <!-- Step 3: Display Results -->
+    <div id="result" style="display: none;">
+      <h2>Your Calculated Grades:</h2>
+      <p id="weightedGrade"></p>
+      <p id="equalGrade"></p>
+      <p id="simpleAverageGrade"></p>
+      <button id="restart">Restart</button>
     </div>
   </div>
   
