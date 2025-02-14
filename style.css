@@ -1,35 +1,60 @@
+/* style.css */
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
 }
 
 .container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    width: 350px;
-    text-align: center;
+  background: #fff;
+  padding: 20px 30px;
+  max-width: 600px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-input, select, button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    font-size: 16px;
+h1, h2 {
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+
+.radio-group {
+  margin-top: 10px;
 }
 
 button {
-    background: #007BFF;
-    color: white;
-    border: none;
-    cursor: pointer;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #4285F4;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  font-size: 1em;
 }
 
 button:hover {
-    background: #0056b3;
+  background-color: #357AE8;
+}
+
+.hint {
+  font-size: 0.9em;
+  color: #555;
+  margin-top: 5px;
 }
