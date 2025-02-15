@@ -82,7 +82,7 @@ document.getElementById("sectorsForm").addEventListener("submit", function (even
     }
     normalizedWeights = weights.map(w => w / totalWeight);
   } else {
-    // For equal weighting, we simply use an array of ones (but weighted grade will be marked as not applicable)
+    // For equal weighting, we simply use an array of ones (but weighted grade will be "not applicable")
     weights = Array(sectors).fill(1.0);
   }
   
@@ -105,16 +105,16 @@ document.getElementById("sectorsForm").addEventListener("submit", function (even
     grades.push(achievedMark / maxMark);
   }
   
-  // Calculate the Equal Weight Final Grade (each sector contributes equally)
+  // Calculate the Equal Weight Final Grade
   let equalFinalGrade = (grades.reduce((acc, curr) => acc + curr, 0) / sectors) * 100;
   
-  // Calculate the Weighted Final Grade (only if custom weights were provided)
+  // Calculate the Weighted Final Grade
   let weightedFinalGrade = null;
   if (equalWeight === "n") {
     weightedFinalGrade = grades.reduce((acc, curr, index) => acc + curr * normalizedWeights[index], 0) * 100;
   }
   
-  // Calculate the Simple Average Final Grade (total achieved marks divided by total maximum marks)
+  // Calculate the Simple Average Final Grade
   let totalAchieved = sectorAchievedMarks.reduce((acc, curr) => acc + curr, 0);
   let totalMax = sectorMaxMarks.reduce((acc, curr) => acc + curr, 0);
   let simpleAverageGrade = (totalAchieved / totalMax) * 100;
@@ -137,7 +137,7 @@ document.getElementById("sectorsForm").addEventListener("submit", function (even
   simpleAverageGradeElem.textContent = `3. Simple Average Final Grade: ${simpleAverageGrade.toFixed(2)}% (sum of all marks divided by total possible marks)`;
 });
 
-// Restart the calculator and reset forms
+// Restart the calculator
 document.getElementById("restart").addEventListener("click", function () {
   document.getElementById("initialForm").reset();
   document.getElementById("sectorsForm").reset();
@@ -147,10 +147,10 @@ document.getElementById("restart").addEventListener("click", function () {
 });
 
 // ------------------------------
-// Theme Toggle and Random Angled Text
+// THEME TOGGLE & RANDOM ANGLED TEXT
 // ------------------------------
 
-// Function to apply the theme
+// Helper to apply the chosen theme
 function applyTheme(theme) {
   if (theme === "dark") {
     document.body.classList.add("dark-mode");
@@ -161,30 +161,36 @@ function applyTheme(theme) {
 
 // Check for saved theme or system preference
 let savedTheme = localStorage.getItem("theme");
+const themeToggle = document.getElementById("themeToggle");
+
 if (savedTheme) {
   applyTheme(savedTheme);
+  themeToggle.checked = (savedTheme === "dark");
 } else {
+  // If no saved preference, follow system setting
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     applyTheme("dark");
     localStorage.setItem("theme", "dark");
+    themeToggle.checked = true;
   } else {
     applyTheme("light");
     localStorage.setItem("theme", "light");
+    themeToggle.checked = false;
   }
 }
 
-// Theme toggle button event
-document.getElementById("themeToggle").addEventListener("click", function() {
-  if (document.body.classList.contains("dark-mode")) {
-    applyTheme("light");
-    localStorage.setItem("theme", "light");
-  } else {
+// Listen for changes to the toggle
+themeToggle.addEventListener("change", function() {
+  if (this.checked) {
     applyTheme("dark");
     localStorage.setItem("theme", "dark");
+  } else {
+    applyTheme("light");
+    localStorage.setItem("theme", "light");
   }
 });
 
-// Set random angled text from a predefined list
+// Random angled text from a predefined list
 const phrases = [
   "Made by a zaga student",
   "because some people don't understand grades",
