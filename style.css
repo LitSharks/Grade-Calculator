@@ -1,3 +1,6 @@
+/* Import a pixelated/retro font (similar vibe to Minecraft) */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
@@ -5,13 +8,23 @@ body {
   padding: 20px;
 }
 
+/* Dark mode overrides will apply when .dark-mode is on the <body> */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+/* Container styling */
 .container {
   background: #fff;
   padding: 20px 30px;
   max-width: 600px;
   margin: auto;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  position: relative; /* so that the theme toggle can be positioned relative to container */
+}
+body.dark-mode .container {
+  background-color: #1e1e1e;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 h1, h2 {
@@ -30,6 +43,12 @@ input[type="text"] {
   padding: 8px;
   margin-top: 5px;
   box-sizing: border-box;
+}
+body.dark-mode input[type="number"],
+body.dark-mode input[type="text"] {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #555;
 }
 
 .radio-group {
@@ -57,36 +76,9 @@ button {
   width: 100%;
   font-size: 1em;
 }
-
 button:hover {
   background-color: #357AE8;
 }
-
-.hint {
-  font-size: 0.9em;
-  color: #555;
-  margin-top: 5px;
-}
-
-/* Theme Toggle Button Style */
-.theme-toggle {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 5px 10px;
-  font-size: 0.9em;
-}
-
-/* Dark Mode Styles */
-body.dark-mode {
-  background-color: #121212;
-  color: #e0e0e0;
-}
-body.dark-mode .container {
-  background-color: #1e1e1e;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-body.dark-mode input,
 body.dark-mode button {
   background-color: #333;
   color: #e0e0e0;
@@ -96,19 +88,90 @@ body.dark-mode button:hover {
   background-color: #555;
 }
 
-/* Angled Text Style */
-.angled-text {
-  position: fixed;
-  top: 20px;
-  left: -40px;
-  transform: rotate(-45deg);
-  font-size: 1.2em;
-  font-weight: bold;
+.hint {
+  font-size: 0.9em;
   color: #555;
-  pointer-events: none;
+  margin-top: 5px;
+}
+body.dark-mode .hint {
+  color: #ccc;
 }
 
-/* PayPal Link Style */
+/* --- The iOS-style toggle switch --- */
+.switch {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 50px;
+  height: 28px;
+  display: inline-block;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+}
+
+.slider {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+/* When the checkbox is checked, move the circle to the right */
+input:checked + .slider {
+  background-color: #2196F3;
+}
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* --- Angled Text --- */
+.angled-text {
+  font-family: 'Press Start 2P', sans-serif;
+  color: #FFD700;  /* Golden color, like Minecraft's daily tip text */
+  position: fixed;
+  top: 40px;
+  right: -40px; /* Start a bit off-screen to ensure it’s visible after rotation */
+  transform: rotate(45deg);
+  transform-origin: center;
+  font-size: 1rem;
+  pointer-events: none;
+  animation: breathe 3s infinite;
+  max-width: 200px;
+  text-align: center;
+}
+
+/* "Breathing" or pulsing effect */
+@keyframes breathe {
+  0% {
+    transform: rotate(45deg) scale(1);
+  }
+  50% {
+    transform: rotate(45deg) scale(1.15);
+  }
+  100% {
+    transform: rotate(45deg) scale(1);
+  }
+}
+
+/* Very small PayPal link in the bottom left corner */
 .paypal-link {
   position: fixed;
   bottom: 5px;
