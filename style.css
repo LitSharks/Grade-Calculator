@@ -24,11 +24,11 @@ body.dark-mode .container {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-/* Minecraft-like main title */
+/* Minecraft-like title */
 h1 {
   font-family: 'Press Start 2P', sans-serif;
-  color: #FFD700;
-  text-shadow: 2px 2px 0 #000;
+  color: #FFD700;       /* Golden color */
+  text-shadow: 2px 2px 0 #000; /* Black shadow */
   text-align: center;
   margin-top: 0;
 }
@@ -42,7 +42,6 @@ label {
   margin-top: 10px;
   font-weight: bold;
 }
-
 input[type="number"],
 input[type="text"] {
   width: 100%;
@@ -117,21 +116,18 @@ body.dark-mode .mode-wrapper {
   color: #ccc;
 }
 
-/* The iOS-style switch, sized up */
 .switch {
   position: relative;
   width: 70px;
   height: 36px;
   display: inline-block;
 }
-
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
   cursor: pointer;
 }
-
 .slider {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -142,22 +138,20 @@ body.dark-mode .mode-wrapper {
 .slider:before {
   position: absolute;
   content: "";
-  height: 28px;
-  width: 28px;
-  left: 4px;
-  bottom: 4px;
+  height: 28px; 
+  width: 28px;  
+  left: 4px;    
+  bottom: 4px; 
   background-color: #fff;
   transition: .4s;
   border-radius: 50%;
 }
-
 input:checked + .slider {
   background-color: #2196F3;
 }
 input:checked + .slider:before {
   transform: translateX(34px);
 }
-
 .slider.round {
   border-radius: 34px;
 }
@@ -165,15 +159,15 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-/* Angled text on the right side, "breathing" effect */
+/* Angled text on the right side with "breathing" effect */
 .angled-text {
   font-family: 'Press Start 2P', sans-serif;
   color: #FFD700;
   text-shadow: 2px 2px 0 #000;
   position: fixed;
-  /* Moved lower and more to the left to avoid clipping */
-  top: 100px;
-  right: -80px;
+  /* Adjust these to shift the text lower and left */
+  top: 150px;     /* increase from 60px to 150px for lower */
+  right: -60px;   /* move from -100px to -60px for more left */
   transform: rotate(45deg);
   transform-origin: center;
   font-size: 1.2rem;
@@ -183,6 +177,7 @@ input:checked + .slider:before {
   text-align: center;
 }
 
+/* "Breathing" or pulsing effect */
 @keyframes breathe {
   0% {
     transform: rotate(45deg) scale(1);
