@@ -150,7 +150,6 @@ document.getElementById("restart").addEventListener("click", function () {
 // THEME TOGGLE & RANDOM ANGLED TEXT
 // ------------------------------
 
-// Helper to apply the chosen theme
 function applyTheme(theme) {
   if (theme === "dark") {
     document.body.classList.add("dark-mode");
@@ -160,8 +159,8 @@ function applyTheme(theme) {
 }
 
 // Check for saved theme or system preference
-let savedTheme = localStorage.getItem("theme");
 const themeToggle = document.getElementById("themeToggle");
+let savedTheme = localStorage.getItem("theme");
 
 if (savedTheme) {
   applyTheme(savedTheme);
@@ -179,7 +178,7 @@ if (savedTheme) {
   }
 }
 
-// Listen for changes to the toggle
+// Toggle changes
 themeToggle.addEventListener("change", function() {
   if (this.checked) {
     applyTheme("dark");
@@ -190,11 +189,11 @@ themeToggle.addEventListener("change", function() {
   }
 });
 
-// Random angled text from a predefined list
+// Random angled text + exclamation mark
 const phrases = [
   "Made by a zaga student",
   "because some people don't understand grades",
   "brrrrrrrrrrrrrr"
 ];
 const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-document.getElementById("angledText").textContent = randomPhrase;
+document.getElementById("angledText").textContent = randomPhrase + "!";
