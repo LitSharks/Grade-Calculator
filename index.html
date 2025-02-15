@@ -7,64 +7,76 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Theme toggle placed at the top-right -->
   <div class="mode-wrapper">
-    <span class="mode-label">Light/Dark Mode</span>
+    <span class="mode-label">Light/Dark mode:</span>
     <label class="switch">
       <input type="checkbox" id="themeToggle" />
       <span class="slider round"></span>
     </label>
   </div>
-
-  <div class="container">
-    <h1>Grade Calculator</h1>
+  
+  <main class="container">
+    <header>
+      <h1>Grade Calculator</h1>
+    </header>
     
-    <div id="step1">
+    <!-- Step 1: Initial Setup -->
+    <section id="step1">
       <form id="initialForm">
-        <label for="sectors">How many grade sectors do you want? (1-100):</label>
-        <input type="number" id="sectors" name="sectors" min="1" max="100" required />
-
-        <label>Do you want each grade sector to have equal weight?</label>
-        <div class="radio-group">
-          <label for="equalYes">
-            <input type="radio" id="equalYes" name="equalWeight" value="y" checked />
-            Yes
-          </label>
-          <label for="equalNo">
-            <input type="radio" id="equalNo" name="equalWeight" value="n" />
-            No
-          </label>
+        <div class="form-group">
+          <label for="sectors">How many grade sectors do you want? (1-100):</label>
+          <input type="number" id="sectors" name="sectors" min="1" max="100" required />
         </div>
-
-        <button type="submit">Continue</button>
+        <div class="form-group">
+          <p>Do you want each grade sector to have equal weight?</p>
+          <div class="radio-group">
+            <label for="equalYes">
+              <input type="radio" id="equalYes" name="equalWeight" value="y" checked />
+              Yes
+            </label>
+            <label for="equalNo">
+              <input type="radio" id="equalNo" name="equalWeight" value="n" />
+              No
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="btn">Continue</button>
       </form>
-    </div>
+    </section>
     
-    <div id="step2" class="hidden">
+    <!-- Step 2: Input Weights and Marks -->
+    <section id="step2" style="display: none;">
       <form id="sectorsForm">
-        <div id="weightsSection" class="hidden">
+        <div id="weightsSection" style="display: none;">
           <h2>Enter Weights for Each Sector</h2>
           <div id="weightsInputs"></div>
           <p class="hint">Enter weights for each sector (arbitrary units, will be normalized).</p>
         </div>
-
         <h2>Enter Marks for Each Sector</h2>
         <div id="marksInputs"></div>
-
-        <button type="submit">Calculate Grades</button>
+        <button type="submit" class="btn">Calculate Grades</button>
       </form>
-    </div>
+    </section>
     
-    <div id="result" class="hidden">
+    <!-- Step 3: Display Results -->
+    <section id="result" style="display: none;">
       <h2>Your Calculated Grades</h2>
-      <p id="weightedGrade"></p>
-      <p id="equalGrade"></p>
-      <p id="simpleAverageGrade"></p>
-      <button id="restart">Restart</button>
-    </div>
-  </div>
+      <div id="resultsContainer">
+        <p id="weightedGrade"></p>
+        <p id="equalGrade"></p>
+        <p id="simpleAverageGrade"></p>
+      </div>
+      <button id="restart" class="btn">Restart</button>
+    </section>
+  </main>
   
+  <!-- Fun angled text element -->
   <div id="angledText" class="angled-text"></div>
-  <a href="https://paypal.me/uribemax?country.x=CA&locale.x=en_US" id="paypalLink" class="paypal-link">paypal</a>
+  
+  <!-- Small PayPal donation link -->
+  <a href="https://paypal.me/uribemax?country.x=CA&locale.x=en_US" id="paypalLink" class="paypal-link">Donate</a>
+  
   <script src="script.js"></script>
 </body>
 </html>
