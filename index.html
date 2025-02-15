@@ -57,13 +57,26 @@
       animation: breathe 2s ease-in-out infinite;
     }
     @keyframes breathe {
-      0%,
-      100% {
+      0%, 100% {
         transform: rotate(-15deg) scale(1);
       }
       50% {
         transform: rotate(-15deg) scale(1.1);
       }
+    }
+    /* Info Button Styling */
+    .info-btn {
+      background-color: transparent;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 70px; /* Positioned near the theme toggle */
+    }
+    .info-btn:hover {
+      color: var(--primary-color);
     }
 
     /* ----- Theme Toggle Switch (iOS-style) ----- */
@@ -194,6 +207,42 @@
       margin-top: 0;
     }
 
+    /* ----- Modal (Info) Styles ----- */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 100; /* On top */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+    }
+    .modal-content {
+      background-color: var(--input-bg);
+      margin: 10% auto;
+      padding: 1rem;
+      border: 1px solid var(--input-border);
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+      color: var(--text-color);
+      position: relative;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+    }
+    .close {
+      color: var(--text-color);
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     /* ----- Footer (PayPal Link) ----- */
     footer {
       position: fixed;
@@ -230,9 +279,10 @@
     </label>
   </div>
 
-  <!-- Header with Title & Animated Angled Text -->
+  <!-- Header with Title, Info Button & Animated Angled Text -->
   <header>
     <h1 id="main-title">Grade Calculator</h1>
+    <button id="info-btn" class="info-btn" title="More Info">i</button>
     <div id="angled-text"></div>
   </header>
 
@@ -288,6 +338,18 @@
     >
   </footer>
 
+  <!-- Info Modal -->
+  <div id="info-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Grade Types Explained</h2>
+      <p><strong>Weighted Final Grade:</strong> This method uses your custom weights for each sector. It takes into account the relative importance of each assignment or exam. Use this when different tasks are meant to contribute unequally to your final grade.</p>
+      <p><strong>Equal Weight Final Grade:</strong> Here, every sector contributes equally regardless of any custom weights. This method is simple and is ideal when all assignments are intended to have the same impact.</p>
+      <p><strong>Simple Average Final Grade:</strong> This is calculated by dividing the total achieved marks by the total maximum marks. It provides a raw average of performance but may not reflect differences in assignment importance.</p>
+      <p>Choose the method that best aligns with your course requirements and assessment policies.</p>
+    </div>
+  </div>
+
   <!-- ----- JavaScript ----- -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -307,10 +369,7 @@
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme) {
         setTheme(savedTheme);
-      } else if (
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      ) {
+      } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
         setTheme("dark");
       } else {
         setTheme("light");
@@ -327,15 +386,32 @@
         "BRRRRR!",
         "Why did the chicken cross the road?",
       ];
-      angledText.textContent =
-        messages[Math.floor(Math.random() * messages.length)];
+      angledText.textContent = messages[Math.floor(Math.random() * messages.length)];
+
+      /* ----- Info Modal Handling ----- */
+      const infoBtn = document.getElementById("info-btn");
+      const infoModal = document.getElementById("info-modal");
+      const closeBtn = document.querySelector("#info-modal .close");
+
+      infoBtn.addEventListener("click", () => {
+        infoModal.style.display = "block";
+      });
+
+      closeBtn.addEventListener("click", () => {
+        infoModal.style.display = "none";
+      });
+
+      window.addEventListener("click", (event) => {
+        if (event.target === infoModal) {
+          infoModal.style.display = "none";
+        }
+      });
 
       /* ----- Weighting Option Toggle ----- */
       const weightingRadios = document.getElementsByName("weighting");
       weightingRadios.forEach((radio) => {
         radio.addEventListener("change", function () {
-          const customWeightsContainer =
-            document.getElementById("custom-weights-container");
+          const customWeightsContainer = document.getElementById("custom-weights-container");
           if (this.value === "custom") {
             customWeightsContainer.style.display = "block";
           } else {
@@ -347,9 +423,7 @@
       /* ----- Generate Sector Input Fields ----- */
       const generateSectorsBtn = document.getElementById("generate-sectors");
       generateSectorsBtn.addEventListener("click", function () {
-        const numSectors = parseInt(
-          document.getElementById("num-sectors").value
-        );
+        const numSectors = parseInt(document.getElementById("num-sectors").value);
         if (isNaN(numSectors) || numSectors < 1 || numSectors > 100) {
           alert("Please enter a valid number of sectors between 1 and 100.");
           return;
@@ -358,9 +432,7 @@
         document.getElementById("marks-container").innerHTML = "";
         document.getElementById("custom-weights").innerHTML = "";
 
-        const weightingValue = document.querySelector(
-          'input[name="weighting"]:checked'
-        ).value;
+        const weightingValue = document.querySelector('input[name="weighting"]:checked').value;
         // Generate custom weight inputs if needed
         if (weightingValue === "custom") {
           const customWeightsDiv = document.getElementById("custom-weights");
@@ -394,21 +466,15 @@
       /* ----- Calculate Grades ----- */
       const calculateBtn = document.getElementById("calculate-btn");
       calculateBtn.addEventListener("click", function () {
-        const numSectors = parseInt(
-          document.getElementById("num-sectors").value
-        );
+        const numSectors = parseInt(document.getElementById("num-sectors").value);
         if (isNaN(numSectors) || numSectors < 1 || numSectors > 100) {
           alert("Please enter a valid number of sectors between 1 and 100.");
           return;
         }
-        const weightingValue = document.querySelector(
-          'input[name="weighting"]:checked'
-        ).value;
+        const weightingValue = document.querySelector('input[name="weighting"]:checked').value;
         let weights = [];
         if (weightingValue === "custom") {
-          const weightInputs = document.querySelectorAll(
-            "#custom-weights input"
-          );
+          const weightInputs = document.querySelectorAll("#custom-weights input");
           weightInputs.forEach((input) => {
             const w = parseFloat(input.value);
             if (isNaN(w) || w < 0) {
@@ -450,33 +516,21 @@
         // Calculate final grades
         let weightedFinalGrade = null;
         if (weightingValue === "custom") {
-          weightedFinalGrade = grades.reduce(
-            (acc, grade, index) => acc + grade * weights[index],
-            0
-          ) * 100;
+          weightedFinalGrade = grades.reduce((acc, grade, index) => acc + grade * weights[index], 0) * 100;
         }
-        const equalFinalGrade = grades.reduce(
-          (acc, grade) => acc + grade * (1 / numSectors),
-          0
-        ) * 100;
+        const equalFinalGrade = grades.reduce((acc, grade) => acc + grade * (1 / numSectors), 0) * 100;
         const simpleAverageGrade = (totalAchieved / totalMax) * 100;
 
         // Display results
         document.getElementById("results").style.display = "block";
         document.getElementById("weighted-result").textContent =
           weightedFinalGrade !== null
-            ? `Weighted Final Grade: ${weightedFinalGrade.toFixed(
-                2
-              )}% (based on your assigned weights)`
+            ? `Weighted Final Grade: ${weightedFinalGrade.toFixed(2)}% (based on your assigned weights)`
             : `Weighted Final Grade: Not applicable (equal weights used)`;
         document.getElementById("equal-result").textContent =
-          `Equal Weight Final Grade: ${equalFinalGrade.toFixed(
-            2
-          )}% (assuming all sectors contribute equally)`;
+          `Equal Weight Final Grade: ${equalFinalGrade.toFixed(2)}% (assuming all sectors contribute equally)`;
         document.getElementById("simple-average-result").textContent =
-          `Simple Average Final Grade: ${simpleAverageGrade.toFixed(
-            2
-          )}% (sum of all marks divided by total possible marks)`;
+          `Simple Average Final Grade: ${simpleAverageGrade.toFixed(2)}% (total achieved marks divided by total possible marks)`;
       });
 
       /* ----- Restart / Reset ----- */
