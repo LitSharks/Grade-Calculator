@@ -2,83 +2,492 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Grade Calculator</title>
-  <link rel="stylesheet" href="style.css" />
+  <!-- Minecraft-style Pixelated Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* ----- Base Variables & Themes ----- */
+    :root {
+      --bg-color: #f0f0f0;
+      --text-color: #333;
+      --primary-color: #FFD700; /* Golden */
+      --input-bg: #fff;
+      --input-border: #ccc;
+    }
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --input-bg: #333;
+      --input-border: #555;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 1rem;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* ----- Header & Title ----- */
+    header {
+      position: relative;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    #main-title {
+      font-family: "Press Start 2P", cursive;
+      font-size: 2rem;
+      color: var(--primary-color);
+      text-shadow: 2px 2px 0 #000;
+      margin: 0;
+    }
+    /* Angled text in the corner */
+    #angled-text {
+      position: absolute;
+      left: 10px;
+      bottom: -10px;
+      transform: rotate(-15deg);
+      font-size: 0.8rem;
+      font-style: italic;
+      animation: breathe 2s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%,
+      100% {
+        transform: rotate(-15deg) scale(1);
+      }
+      50% {
+        transform: rotate(-15deg) scale(1.1);
+      }
+    }
+
+    /* ----- Theme Toggle Switch (iOS-style) ----- */
+    .theme-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #66bb6a;
+    }
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    /* ----- Form & Inputs ----- */
+    form {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1rem;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 0.3rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+    }
+    /* Inline labels for radio buttons */
+    .form-group label.inline {
+      display: inline-block;
+      margin-right: 1rem;
+      font-weight: normal;
+    }
+    /* Sector sections */
+    .sector-weight,
+    .sector-marks {
+      border: 1px solid var(--input-border);
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 4px;
+    }
+    .sector-marks h3 {
+      margin-top: 0;
+    }
+    /* Buttons */
+    button {
+      padding: 0.5rem 1rem;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    #generate-sectors {
+      background-color: #4d90fe;
+      color: white;
+    }
+    #calculate-btn {
+      background-color: #34a853;
+      color: white;
+    }
+    #reset-btn {
+      background-color: #ea4335;
+      color: white;
+    }
+
+    /* ----- Results ----- */
+    #results {
+      max-width: 800px;
+      margin: 1rem auto;
+      padding: 1rem;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      background: var(--input-bg);
+    }
+    #results h2 {
+      margin-top: 0;
+    }
+
+    /* ----- Footer (PayPal Link) ----- */
+    footer {
+      position: fixed;
+      bottom: 5px;
+      left: 5px;
+      font-size: 0.6rem;
+    }
+    footer a {
+      text-decoration: none;
+      color: var(--text-color);
+    }
+
+    /* ----- Responsive Adjustments ----- */
+    @media (max-width: 600px) {
+      .switch {
+        width: 40px;
+        height: 22px;
+      }
+      .slider:before {
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        bottom: 3px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Theme toggle placed at the top-right -->
-  <div class="mode-wrapper">
-    <span class="mode-label">Light/Dark mode:</span>
+  <!-- Theme Toggle -->
+  <div class="theme-toggle">
     <label class="switch">
-      <input type="checkbox" id="themeToggle" />
-      <span class="slider round"></span>
+      <input type="checkbox" id="theme-switch" />
+      <span class="slider"></span>
     </label>
   </div>
-  
-  <main class="container">
-    <header>
-      <h1>Grade Calculator</h1>
-    </header>
-    
-    <!-- Step 1: Initial Setup -->
-    <section id="step1">
-      <form id="initialForm">
-        <div class="form-group">
-          <label for="sectors">How many grade sectors do you want? (1-100):</label>
-          <input type="number" id="sectors" name="sectors" min="1" max="100" required />
-        </div>
-        <div class="form-group">
-          <p>Do you want each grade sector to have equal weight?</p>
-          <div class="radio-group">
-            <label for="equalYes">
-              <input type="radio" id="equalYes" name="equalWeight" value="y" checked />
-              Yes
-            </label>
-            <label for="equalNo">
-              <input type="radio" id="equalNo" name="equalWeight" value="n" />
-              No
-            </label>
-          </div>
-        </div>
-        <button type="submit" class="btn">Continue</button>
-      </form>
-    </section>
-    
-    <!-- Step 2: Input Weights and Marks -->
-    <section id="step2" style="display: none;">
-      <form id="sectorsForm">
-        <!-- Weights Section (only if not equal weighting) -->
-        <div id="weightsSection" style="display: none;">
-          <h2>Enter Weights for Each Sector</h2>
-          <div id="weightsInputs"></div>
-          <p class="hint">Enter weights for each sector (arbitrary units, will be normalized).</p>
-        </div>
-        <!-- Marks Section -->
-        <h2>Enter Marks for Each Sector</h2>
-        <div id="marksInputs"></div>
-        <button type="submit" class="btn">Calculate Grades</button>
-      </form>
-    </section>
-    
-    <!-- Step 3: Display Results -->
-    <section id="result" style="display: none;">
-      <h2>Your Calculated Grades</h2>
-      <div id="resultsContainer">
-        <p id="weightedGrade"></p>
-        <p id="equalGrade"></p>
-        <p id="simpleAverageGrade"></p>
-      </div>
-      <button id="restart" class="btn">Restart</button>
-    </section>
-  </main>
-  
-  <!-- Fun angled text element -->
-  <div id="angledText" class="angled-text"></div>
-  
-  <!-- Small PayPal donation link -->
-  <a href="https://paypal.me/uribemax?country.x=CA&locale.x=en_US" id="paypalLink" class="paypal-link">Donate</a>
-  
-  <script src="script.js"></script>
+
+  <!-- Header with Title & Animated Angled Text -->
+  <header>
+    <h1 id="main-title">Grade Calculator</h1>
+    <div id="angled-text"></div>
+  </header>
+
+  <!-- Main Form -->
+  <form id="grade-form">
+    <!-- Number of Sectors -->
+    <div class="form-group">
+      <label for="num-sectors">Number of grade sectors (1–100):</label>
+      <input type="number" id="num-sectors" name="num-sectors" min="1" max="100" required />
+    </div>
+
+    <!-- Weighting Option -->
+    <div class="form-group">
+      <label>Weighting:</label>
+      <label class="inline">
+        <input type="radio" name="weighting" value="equal" checked /> Equal Weight
+      </label>
+      <label class="inline">
+        <input type="radio" name="weighting" value="custom" /> Custom Weight
+      </label>
+    </div>
+
+    <!-- Custom Weights (hidden by default) -->
+    <div class="form-group" id="custom-weights-container" style="display: none;">
+      <p>Enter weights for each sector (arbitrary units; will be normalized):</p>
+      <div id="custom-weights"></div>
+    </div>
+
+    <!-- Marks for Each Sector -->
+    <div id="marks-container"></div>
+
+    <!-- Buttons -->
+    <button type="button" id="generate-sectors">Generate Sectors</button>
+    <button type="button" id="calculate-btn">Calculate Grades</button>
+    <button type="button" id="reset-btn">Restart</button>
+  </form>
+
+  <!-- Results Display -->
+  <div id="results" style="display: none;">
+    <h2>Results:</h2>
+    <p id="weighted-result"></p>
+    <p id="equal-result"></p>
+    <p id="simple-average-result"></p>
+  </div>
+
+  <!-- Hidden PayPal Link -->
+  <footer>
+    <a
+      href="https://paypal.me/uribemax?country.x=CA&locale.x=en_US"
+      target="_blank"
+      title="Donate via PayPal"
+      >paypal</a
+    >
+  </footer>
+
+  <!-- ----- JavaScript ----- -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      /* ----- Theme Management ----- */
+      const themeSwitch = document.getElementById("theme-switch");
+      function setTheme(theme) {
+        if (theme === "dark") {
+          document.body.classList.add("dark");
+          themeSwitch.checked = true;
+        } else {
+          document.body.classList.remove("dark");
+          themeSwitch.checked = false;
+        }
+        localStorage.setItem("theme", theme);
+      }
+      // Initialize theme based on localStorage or system preference
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        setTheme(savedTheme);
+      } else if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        setTheme("dark");
+      } else {
+        setTheme("light");
+      }
+      themeSwitch.addEventListener("change", function () {
+        setTheme(this.checked ? "dark" : "light");
+      });
+
+      /* ----- Random Angled Text ----- */
+      const angledText = document.getElementById("angled-text");
+      const messages = [
+        "Made by a zaga student!",
+        "Because some people don't understand grades!",
+        "BRRRRR!",
+        "Why did the chicken cross the road?",
+      ];
+      angledText.textContent =
+        messages[Math.floor(Math.random() * messages.length)];
+
+      /* ----- Weighting Option Toggle ----- */
+      const weightingRadios = document.getElementsByName("weighting");
+      weightingRadios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+          const customWeightsContainer =
+            document.getElementById("custom-weights-container");
+          if (this.value === "custom") {
+            customWeightsContainer.style.display = "block";
+          } else {
+            customWeightsContainer.style.display = "none";
+          }
+        });
+      });
+
+      /* ----- Generate Sector Input Fields ----- */
+      const generateSectorsBtn = document.getElementById("generate-sectors");
+      generateSectorsBtn.addEventListener("click", function () {
+        const numSectors = parseInt(
+          document.getElementById("num-sectors").value
+        );
+        if (isNaN(numSectors) || numSectors < 1 || numSectors > 100) {
+          alert("Please enter a valid number of sectors between 1 and 100.");
+          return;
+        }
+        // Clear any previous inputs
+        document.getElementById("marks-container").innerHTML = "";
+        document.getElementById("custom-weights").innerHTML = "";
+
+        const weightingValue = document.querySelector(
+          'input[name="weighting"]:checked'
+        ).value;
+        // Generate custom weight inputs if needed
+        if (weightingValue === "custom") {
+          const customWeightsDiv = document.getElementById("custom-weights");
+          for (let i = 0; i < numSectors; i++) {
+            const div = document.createElement("div");
+            div.classList.add("sector-weight");
+            div.innerHTML = `<label>Sector ${i + 1} weight:
+                  <input type="number" step="any" min="0" required />
+                </label>`;
+            customWeightsDiv.appendChild(div);
+          }
+        }
+        // Generate marks inputs for each sector
+        const marksContainer = document.getElementById("marks-container");
+        for (let i = 0; i < numSectors; i++) {
+          const div = document.createElement("div");
+          div.classList.add("sector-marks");
+          div.innerHTML = `
+                <h3>Sector ${i + 1}</h3>
+                <label>Max Mark:
+                  <input type="number" step="any" min="0" required />
+                </label>
+                <label>Achieved Mark:
+                  <input type="number" step="any" min="0" required />
+                </label>
+              `;
+          marksContainer.appendChild(div);
+        }
+      });
+
+      /* ----- Calculate Grades ----- */
+      const calculateBtn = document.getElementById("calculate-btn");
+      calculateBtn.addEventListener("click", function () {
+        const numSectors = parseInt(
+          document.getElementById("num-sectors").value
+        );
+        if (isNaN(numSectors) || numSectors < 1 || numSectors > 100) {
+          alert("Please enter a valid number of sectors between 1 and 100.");
+          return;
+        }
+        const weightingValue = document.querySelector(
+          'input[name="weighting"]:checked'
+        ).value;
+        let weights = [];
+        if (weightingValue === "custom") {
+          const weightInputs = document.querySelectorAll(
+            "#custom-weights input"
+          );
+          weightInputs.forEach((input) => {
+            const w = parseFloat(input.value);
+            if (isNaN(w) || w < 0) {
+              alert("Please enter valid non-negative numbers for weights.");
+              throw new Error("Invalid weight input");
+            }
+            weights.push(w);
+          });
+          const totalWeight = weights.reduce((acc, cur) => acc + cur, 0);
+          if (totalWeight === 0) {
+            alert("Total weight cannot be zero.");
+            return;
+          }
+          weights = weights.map((w) => w / totalWeight);
+        } else {
+          // Equal weighting array (each sector gets the same weight)
+          weights = new Array(numSectors).fill(1 / numSectors);
+        }
+
+        // Gather marks for each sector
+        const marksDivs = document.querySelectorAll(".sector-marks");
+        let grades = [];
+        let totalAchieved = 0;
+        let totalMax = 0;
+        marksDivs.forEach((div, index) => {
+          const inputs = div.getElementsByTagName("input");
+          const maxMark = parseFloat(inputs[0].value);
+          const achievedMark = parseFloat(inputs[1].value);
+          if (isNaN(maxMark) || maxMark <= 0 || isNaN(achievedMark) || achievedMark < 0) {
+            alert(`Please enter valid marks for sector ${index + 1}.`);
+            throw new Error("Invalid marks input");
+          }
+          const grade = achievedMark / maxMark;
+          grades.push(grade);
+          totalAchieved += achievedMark;
+          totalMax += maxMark;
+        });
+
+        // Calculate final grades
+        let weightedFinalGrade = null;
+        if (weightingValue === "custom") {
+          weightedFinalGrade = grades.reduce(
+            (acc, grade, index) => acc + grade * weights[index],
+            0
+          ) * 100;
+        }
+        const equalFinalGrade = grades.reduce(
+          (acc, grade) => acc + grade * (1 / numSectors),
+          0
+        ) * 100;
+        const simpleAverageGrade = (totalAchieved / totalMax) * 100;
+
+        // Display results
+        document.getElementById("results").style.display = "block";
+        document.getElementById("weighted-result").textContent =
+          weightedFinalGrade !== null
+            ? `Weighted Final Grade: ${weightedFinalGrade.toFixed(
+                2
+              )}% (based on your assigned weights)`
+            : `Weighted Final Grade: Not applicable (equal weights used)`;
+        document.getElementById("equal-result").textContent =
+          `Equal Weight Final Grade: ${equalFinalGrade.toFixed(
+            2
+          )}% (assuming all sectors contribute equally)`;
+        document.getElementById("simple-average-result").textContent =
+          `Simple Average Final Grade: ${simpleAverageGrade.toFixed(
+            2
+          )}% (sum of all marks divided by total possible marks)`;
+      });
+
+      /* ----- Restart / Reset ----- */
+      const resetBtn = document.getElementById("reset-btn");
+      resetBtn.addEventListener("click", function () {
+        document.getElementById("grade-form").reset();
+        document.getElementById("marks-container").innerHTML = "";
+        document.getElementById("custom-weights").innerHTML = "";
+        document.getElementById("results").style.display = "none";
+      });
+    });
+  </script>
 </body>
 </html>
