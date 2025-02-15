@@ -6,12 +6,15 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- The toggle switch for dark mode -->
-  <label class="switch">
-    <input type="checkbox" id="themeToggle" />
-    <span class="slider round"></span>
-  </label>
-  
+  <!-- A small wrapper for the label + toggle switch -->
+  <div class="mode-wrapper">
+    <span class="mode-label">Light/Dark mode:</span>
+    <label class="switch">
+      <input type="checkbox" id="themeToggle" />
+      <span class="slider round"></span>
+    </label>
+  </div>
+
   <div class="container">
     <h1>Grade Calculator</h1>
     
