@@ -7,8 +7,8 @@ function applyTheme(theme) {
   }
 }
 
-let savedTheme = localStorage.getItem("theme");
 const themeToggle = document.getElementById("themeToggle");
+let savedTheme = localStorage.getItem("theme");
 
 if (savedTheme) {
   applyTheme(savedTheme);
@@ -35,12 +35,24 @@ themeToggle.addEventListener("change", function() {
   }
 });
 
-// Random angled text
+// Random angled text functionality with periodic updates
 const phrases = [
   "Made by a zaga student",
   "because some people don't understand grades",
   "brrrrrrrrrrrrrr"
 ];
 
-const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)] + "!";
-document.getElementById("angledText").textContent = randomPhrase;
+function updateAngledText() {
+  const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)] + "!";
+  const angledTextElement = document.getElementById("angledText");
+  // Fade out before updating text
+  angledTextElement.style.opacity = 0;
+  setTimeout(() => {
+    angledTextElement.textContent = randomPhrase;
+    angledTextElement.style.opacity = 1;
+  }, 500);
+}
+
+// Initialize angled text and update every 8 seconds
+updateAngledText();
+setInterval(updateAngledText, 8000);
