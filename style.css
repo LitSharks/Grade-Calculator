@@ -1,12 +1,105 @@
-/* Adjusted Angled Text Position */
+/* A pixel-like font that feels Minecraft-y */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.container {
+  background: #fff;
+  padding: 20px 30px;
+  max-width: 600px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+body.dark-mode .container {
+  background-color: #1e1e1e;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Minecraft-like main title */
+h1 {
+  font-family: 'Press Start 2P', sans-serif;
+  color: #FFD700;
+  text-shadow: 2px 2px 0 #000;
+  text-align: center;
+  margin-top: 0;
+}
+
+/* Toggle switch */
+.mode-wrapper {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 0.7rem;
+  color: #555;
+}
+body.dark-mode .mode-wrapper {
+  color: #ccc;
+}
+
+.switch {
+  position: relative;
+  width: 70px;
+  height: 36px;
+  display: inline-block;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+}
+
+.slider {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 28px; 
+  width: 28px;  
+  left: 4px;    
+  bottom: 4px; 
+  background-color: #fff;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+input:checked + .slider:before {
+  transform: translateX(34px);
+}
+
+/* Angled text */
 .angled-text {
   font-family: 'Press Start 2P', sans-serif;
   color: #FFD700;
   text-shadow: 2px 2px 0 #000;
   position: fixed;
-  top: 100px;  /* Lowered from 60px */
-  right: 20px; /* Moved slightly left */
-  transform: rotate(20deg); /* Less tilted for better visibility */
+  top: 100px;
+  right: 20px;
+  transform: rotate(20deg);
   font-size: 1.2rem;
   pointer-events: none;
   animation: breathe 3s infinite;
@@ -14,7 +107,7 @@
   text-align: center;
 }
 
-/* Breathing or pulsing effect */
+/* Breathing animation */
 @keyframes breathe {
   0% { transform: rotate(20deg) scale(1); }
   50% { transform: rotate(20deg) scale(1.2); }
