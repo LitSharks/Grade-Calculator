@@ -63,13 +63,6 @@
       text-shadow: 2px 2px 0 #000;
       margin: 0;
     }
-    /* Additional Title Subtext */
-    #cat-subtitle {
-      font-size: 1rem;
-      color: var(--text-color);
-      cursor: pointer;
-      margin-top: 0.5rem;
-    }
     /* Angled text in the corner */
     #angled-text {
       position: absolute;
@@ -300,11 +293,9 @@
     </div>
   </div>
 
-  <!-- Header with Title, Info Button, Additional Subtitle & Animated Angled Text -->
+  <!-- Header with Title, Info Button & Animated Angled Text -->
   <header>
     <h1 id="main-title">Grade Calculator</h1>
-    <!-- Additional Title Subtext -->
-    <h2 id="cat-subtitle">Want to see my cat? Click me!</h2>
     <button id="info-btn" class="info-btn" title="More Info">i</button>
     <div id="angled-text"></div>
   </header>
@@ -365,8 +356,7 @@
       href="https://paypal.me/uribemax?country.x=CA&locale.x=en_US"
       target="_blank"
       title="Donate via PayPal"
-      >paypal</a
-    >
+      >paypal</a>
   </footer>
 
   <!-- Info Modal -->
@@ -446,9 +436,7 @@
       });
 
       /* ----- Cat Image & Confetti Effect ----- */
-      const catSubtitle = document.getElementById("cat-subtitle");
       const catImage = document.getElementById("cat-image");
-
       function showCat() {
         if (catImage.style.display === "none") {
           catImage.style.display = "block";
@@ -460,10 +448,7 @@
           });
         }
       }
-      // Always allow the subtitle to trigger the cat reveal
-      catSubtitle.addEventListener("click", showCat);
-
-      // Also, if the angled text equals the cat message, add a click listener
+      // If the randomly chosen angled text is the cat message, add a click listener
       if (chosenMessage === "Want to see my cat? Click me!") {
         angledText.style.cursor = "pointer";
         angledText.addEventListener("click", showCat);
