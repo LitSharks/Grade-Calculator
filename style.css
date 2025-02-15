@@ -1,7 +1,5 @@
-/* A pixel-like font that feels Minecraft-y */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* Base styling */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
@@ -9,13 +7,11 @@ body {
   padding: 20px;
 }
 
-/* Dark mode override */
 body.dark-mode {
   background-color: #121212;
   color: #e0e0e0;
 }
 
-/* The container for your forms/results */
 .container {
   background: #fff;
   padding: 20px 30px;
@@ -31,23 +27,22 @@ body.dark-mode .container {
 /* Minecraft-like main title */
 h1 {
   font-family: 'Press Start 2P', sans-serif;
-  color: #FFD700;       /* Golden color */
-  text-shadow: 2px 2px 0 #000; /* Black shadow */
+  color: #FFD700;
+  text-shadow: 2px 2px 0 #000;
   text-align: center;
   margin-top: 0;
 }
 
-/* Headings */
 h2 {
   text-align: center;
 }
 
-/* Form labels and inputs */
 label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
 }
+
 input[type="number"],
 input[type="text"] {
   width: 100%;
@@ -62,7 +57,6 @@ body.dark-mode input[type="text"] {
   border-color: #555;
 }
 
-/* Radio buttons */
 .radio-group {
   margin-top: 10px;
 }
@@ -75,7 +69,6 @@ body.dark-mode input[type="text"] {
   margin-right: 5px;
 }
 
-/* Buttons */
 button {
   margin-top: 15px;
   padding: 10px 20px;
@@ -99,7 +92,6 @@ body.dark-mode button:hover {
   background-color: #555;
 }
 
-/* Small helper text */
 .hint {
   font-size: 0.9em;
   color: #555;
@@ -125,15 +117,14 @@ body.dark-mode .mode-wrapper {
   color: #ccc;
 }
 
-/* The iOS-style switch, but larger */
+/* The iOS-style switch, sized up */
 .switch {
   position: relative;
-  width: 70px;  /* Increased width */
-  height: 36px; /* Increased height */
+  width: 70px;
+  height: 36px;
   display: inline-block;
 }
 
-/* Hide the checkbox itself */
 .switch input {
   opacity: 0;
   width: 0;
@@ -141,7 +132,6 @@ body.dark-mode .mode-wrapper {
   cursor: pointer;
 }
 
-/* The slider track */
 .slider {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -149,21 +139,18 @@ body.dark-mode .mode-wrapper {
   transition: .4s;
   border-radius: 34px;
 }
-
-/* The toggle circle */
 .slider:before {
   position: absolute;
   content: "";
-  height: 28px; 
-  width: 28px;  
-  left: 4px;    
-  bottom: 4px; 
+  height: 28px;
+  width: 28px;
+  left: 4px;
+  bottom: 4px;
   background-color: #fff;
   transition: .4s;
   border-radius: 50%;
 }
 
-/* When checked, move the circle to the right */
 input:checked + .slider {
   background-color: #2196F3;
 }
@@ -171,7 +158,6 @@ input:checked + .slider:before {
   transform: translateX(34px);
 }
 
-/* Round slider edges */
 .slider.round {
   border-radius: 34px;
 }
@@ -179,24 +165,24 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-/* Angled text on the right side with "breathing" effect */
+/* Angled text on the right side, "breathing" effect */
 .angled-text {
   font-family: 'Press Start 2P', sans-serif;
   color: #FFD700;
   text-shadow: 2px 2px 0 #000;
   position: fixed;
-  top: 60px;
-  right: -100px; /* Start partially off-screen so the rotation is visible */
+  /* Moved lower and more to the left to avoid clipping */
+  top: 100px;
+  right: -80px;
   transform: rotate(45deg);
   transform-origin: center;
-  font-size: 1.2rem;  /* Larger text */
+  font-size: 1.2rem;
   pointer-events: none;
   animation: breathe 3s infinite;
   max-width: 300px;
   text-align: center;
 }
 
-/* Breathing or pulsing effect */
 @keyframes breathe {
   0% {
     transform: rotate(45deg) scale(1);
