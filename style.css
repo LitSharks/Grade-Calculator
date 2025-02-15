@@ -187,6 +187,17 @@ input:checked + .slider:before {
   opacity: 1;
 }
 
+/* Fieldset styling for sectors */
+.sector-fieldset {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+body.dark-mode .sector-fieldset {
+  border: 1px solid #555;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .container {
