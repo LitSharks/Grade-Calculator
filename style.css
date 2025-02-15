@@ -1,6 +1,7 @@
-/* Import a pixelated/retro font (similar vibe to Minecraft) */
+/* A pixel-like font that feels Minecraft-y */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+/* Base styling */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
@@ -8,13 +9,13 @@ body {
   padding: 20px;
 }
 
-/* Dark mode overrides will apply when .dark-mode is on the <body> */
+/* Dark mode override */
 body.dark-mode {
   background-color: #121212;
   color: #e0e0e0;
 }
 
-/* Container styling */
+/* The container for your forms/results */
 .container {
   background: #fff;
   padding: 20px 30px;
@@ -27,16 +28,26 @@ body.dark-mode .container {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-h1, h2 {
+/* Minecraft-like main title */
+h1 {
+  font-family: 'Press Start 2P', sans-serif;
+  color: #FFD700;       /* Golden color */
+  text-shadow: 2px 2px 0 #000; /* Black shadow */
+  text-align: center;
+  margin-top: 0;
+}
+
+/* Headings */
+h2 {
   text-align: center;
 }
 
+/* Form labels and inputs */
 label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
 }
-
 input[type="number"],
 input[type="text"] {
   width: 100%;
@@ -51,20 +62,20 @@ body.dark-mode input[type="text"] {
   border-color: #555;
 }
 
+/* Radio buttons */
 .radio-group {
   margin-top: 10px;
 }
-
 .radio-group label {
   display: inline-block;
   margin-right: 20px;
   cursor: pointer;
 }
-
 .radio-group input[type="radio"] {
   margin-right: 5px;
 }
 
+/* Buttons */
 button {
   margin-top: 15px;
   padding: 10px 20px;
@@ -88,6 +99,7 @@ body.dark-mode button:hover {
   background-color: #555;
 }
 
+/* Small helper text */
 .hint {
   font-size: 0.9em;
   color: #555;
@@ -97,16 +109,31 @@ body.dark-mode .hint {
   color: #ccc;
 }
 
-/* --- The iOS-style toggle switch --- */
-.switch {
+/* Wrapper for the toggle and label text */
+.mode-wrapper {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 50px;
-  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 0.7rem;
+  color: #555;
+}
+body.dark-mode .mode-wrapper {
+  color: #ccc;
+}
+
+/* The iOS-style switch, but larger */
+.switch {
+  position: relative;
+  width: 70px;  /* Increased width */
+  height: 36px; /* Increased height */
   display: inline-block;
 }
 
+/* Hide the checkbox itself */
 .switch input {
   opacity: 0;
   width: 0;
@@ -114,6 +141,7 @@ body.dark-mode .hint {
   cursor: pointer;
 }
 
+/* The slider track */
 .slider {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -122,49 +150,59 @@ body.dark-mode .hint {
   border-radius: 34px;
 }
 
+/* The toggle circle */
 .slider:before {
   position: absolute;
   content: "";
-  height: 22px;
-  width: 22px;
-  left: 3px;
-  bottom: 3px;
+  height: 28px; 
+  width: 28px;  
+  left: 4px;    
+  bottom: 4px; 
   background-color: #fff;
   transition: .4s;
   border-radius: 50%;
 }
 
-/* When the checkbox is checked, move the circle to the right */
+/* When checked, move the circle to the right */
 input:checked + .slider {
   background-color: #2196F3;
 }
 input:checked + .slider:before {
-  transform: translateX(22px);
+  transform: translateX(34px);
 }
 
-/* --- Angled Text --- */
+/* Round slider edges */
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Angled text on the right side with "breathing" effect */
 .angled-text {
   font-family: 'Press Start 2P', sans-serif;
-  color: #FFD700;  /* Golden color, like Minecraft's daily tip text */
+  color: #FFD700;
+  text-shadow: 2px 2px 0 #000;
   position: fixed;
-  top: 40px;
-  right: -40px; /* Start a bit off-screen to ensure it’s visible after rotation */
+  top: 60px;
+  right: -100px; /* Start partially off-screen so the rotation is visible */
   transform: rotate(45deg);
   transform-origin: center;
-  font-size: 1rem;
+  font-size: 1.2rem;  /* Larger text */
   pointer-events: none;
   animation: breathe 3s infinite;
-  max-width: 200px;
+  max-width: 300px;
   text-align: center;
 }
 
-/* "Breathing" or pulsing effect */
+/* Breathing or pulsing effect */
 @keyframes breathe {
   0% {
     transform: rotate(45deg) scale(1);
   }
   50% {
-    transform: rotate(45deg) scale(1.15);
+    transform: rotate(45deg) scale(1.2);
   }
   100% {
     transform: rotate(45deg) scale(1);
