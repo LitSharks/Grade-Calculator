@@ -9,6 +9,8 @@
     href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
     rel="stylesheet"
   />
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     /* ----- Base Variables & Themes ----- */
     :root {
@@ -33,6 +35,21 @@
       transition: background-color 0.3s, color 0.3s;
     }
 
+    /* ----- Top Right Container (Logo & Theme Toggle) ----- */
+    .top-right {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 100;
+    }
+    #logo {
+      width: 50px; /* Adjust as needed */
+      margin-bottom: 5px;
+    }
+
     /* ----- Header & Title ----- */
     header {
       position: relative;
@@ -45,6 +62,13 @@
       color: var(--primary-color);
       text-shadow: 2px 2px 0 #000;
       margin: 0;
+    }
+    /* Additional Title Subtext */
+    #cat-subtitle {
+      font-size: 1rem;
+      color: var(--text-color);
+      cursor: pointer;
+      margin-top: 0.5rem;
     }
     /* Angled text in the corner */
     #angled-text {
@@ -80,12 +104,6 @@
     }
 
     /* ----- Theme Toggle Switch (iOS-style) ----- */
-    .theme-toggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      z-index: 10;
-    }
     .switch {
       position: relative;
       display: inline-block;
@@ -271,20 +289,33 @@
   </style>
 </head>
 <body>
-  <!-- Theme Toggle -->
-  <div class="theme-toggle">
-    <label class="switch">
-      <input type="checkbox" id="theme-switch" />
-      <span class="slider"></span>
-    </label>
+  <!-- Top Right Container: Logo & Theme Toggle -->
+  <div class="top-right">
+    <img src="logo.png" alt="Logo" id="logo" />
+    <div class="theme-toggle">
+      <label class="switch">
+        <input type="checkbox" id="theme-switch" />
+        <span class="slider"></span>
+      </label>
+    </div>
   </div>
 
-  <!-- Header with Title, Info Button & Animated Angled Text -->
+  <!-- Header with Title, Info Button, Additional Subtitle & Animated Angled Text -->
   <header>
     <h1 id="main-title">Grade Calculator</h1>
+    <!-- Additional Title Subtext -->
+    <h2 id="cat-subtitle">Want to see my cat? Click me!</h2>
     <button id="info-btn" class="info-btn" title="More Info">i</button>
     <div id="angled-text"></div>
   </header>
+
+  <!-- Hidden Cat Image (from cat.png) -->
+  <img
+    id="cat-image"
+    src="cat.png"
+    alt="Cute Cat"
+    style="display:none; max-width:300px; margin: 1rem auto; display: block;"
+  />
 
   <!-- Main Form -->
   <form id="grade-form">
@@ -389,8 +420,11 @@
         "Do you also procrastinate?",
         "If your checking if you can pass, you're alreaady cooked mg",
         "It's easier if you ask your teacher to send out a markbook email ;)",
+        "Want to see my cat? Click me!"
       ];
-      angledText.textContent = messages[Math.floor(Math.random() * messages.length)];
+      // Randomly choose one message
+      const chosenMessage = messages[Math.floor(Math.random() * messages.length)];
+      angledText.textContent = chosenMessage;
 
       /* ----- Info Modal Handling ----- */
       const infoBtn = document.getElementById("info-btn");
@@ -410,6 +444,30 @@
           infoModal.style.display = "none";
         }
       });
+
+      /* ----- Cat Image & Confetti Effect ----- */
+      const catSubtitle = document.getElementById("cat-subtitle");
+      const catImage = document.getElementById("cat-image");
+
+      function showCat() {
+        if (catImage.style.display === "none") {
+          catImage.style.display = "block";
+          // Trigger confetti effect
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+      }
+      // Always allow the subtitle to trigger the cat reveal
+      catSubtitle.addEventListener("click", showCat);
+
+      // Also, if the angled text equals the cat message, add a click listener
+      if (chosenMessage === "Want to see my cat? Click me!") {
+        angledText.style.cursor = "pointer";
+        angledText.addEventListener("click", showCat);
+      }
 
       /* ----- Weighting Option Toggle ----- */
       const weightingRadios = document.getElementsByName("weighting");
