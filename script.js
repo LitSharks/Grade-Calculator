@@ -82,7 +82,7 @@ document.getElementById("sectorsForm").addEventListener("submit", function (even
     }
     normalizedWeights = weights.map(w => w / totalWeight);
   } else {
-    // For equal weighting, we simply use an array of ones (but weighted grade will be "not applicable")
+    // For equal weighting, we simply use an array of ones
     weights = Array(sectors).fill(1.0);
   }
   
@@ -105,21 +105,21 @@ document.getElementById("sectorsForm").addEventListener("submit", function (even
     grades.push(achievedMark / maxMark);
   }
   
-  // Calculate the Equal Weight Final Grade
-  let equalFinalGrade = (grades.reduce((acc, curr) => acc + curr, 0) / sectors) * 100;
+  // Equal Weight Final Grade
+  const equalFinalGrade = (grades.reduce((acc, curr) => acc + curr, 0) / sectors) * 100;
   
-  // Calculate the Weighted Final Grade
+  // Weighted Final Grade
   let weightedFinalGrade = null;
   if (equalWeight === "n") {
     weightedFinalGrade = grades.reduce((acc, curr, index) => acc + curr * normalizedWeights[index], 0) * 100;
   }
   
-  // Calculate the Simple Average Final Grade
-  let totalAchieved = sectorAchievedMarks.reduce((acc, curr) => acc + curr, 0);
-  let totalMax = sectorMaxMarks.reduce((acc, curr) => acc + curr, 0);
-  let simpleAverageGrade = (totalAchieved / totalMax) * 100;
+  // Simple Average Final Grade
+  const totalAchieved = sectorAchievedMarks.reduce((acc, curr) => acc + curr, 0);
+  const totalMax = sectorMaxMarks.reduce((acc, curr) => acc + curr, 0);
+  const simpleAverageGrade = (totalAchieved / totalMax) * 100;
   
-  // Display the results
+  // Display results
   document.getElementById("step2").style.display = "none";
   document.getElementById("result").style.display = "block";
   
