@@ -2,69 +2,572 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Grade Calculator</title>
-  <link rel="stylesheet" href="style.css" />
+  <!-- Minecraft-style Pixelated Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
+  <!-- Canvas Confetti Library (if needed for cat easter egg) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    /* ----- Base Variables & Themes ----- */
+    :root {
+      --bg-color: #f0f0f0;
+      --text-color: #333;
+      --primary-color: #FFD700; /* Golden */
+      --input-bg: #fff;
+      --input-border: #ccc;
+    }
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --input-bg: #333;
+      --input-border: #555;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 1rem;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* ----- Top Right Container (Logo & Theme Toggle) ----- */
+    .top-right {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 100;
+    }
+    #logo {
+      width: 50px; /* Adjust as needed */
+      margin-bottom: 5px;
+    }
+
+    /* ----- Header & Title ----- */
+    header {
+      position: relative;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    #main-title {
+      font-family: "Press Start 2P", cursive;
+      font-size: 2rem;
+      color: var(--primary-color);
+      text-shadow: 2px 2px 0 #000;
+      margin: 0;
+    }
+    /* Angled text in the corner */
+    #angled-text {
+      position: absolute;
+      left: 10px;
+      bottom: -10px;
+      transform: rotate(-15deg);
+      font-size: 0.8rem;
+      font-style: italic;
+      animation: breathe 2s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% {
+        transform: rotate(-15deg) scale(1);
+      }
+      50% {
+        transform: rotate(-15deg) scale(1.1);
+      }
+    }
+    /* Info Button Styling */
+    .info-btn {
+      background-color: transparent;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 70px; /* Positioned near the theme toggle */
+    }
+    .info-btn:hover {
+      color: var(--primary-color);
+    }
+
+    /* ----- Theme Toggle Switch (iOS-style) ----- */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #66bb6a;
+    }
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    /* ----- Form & Inputs ----- */
+    form {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1rem;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 0.3rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+    }
+    /* Inline labels for radio buttons */
+    .form-group label.inline {
+      display: inline-block;
+      margin-right: 1rem;
+      font-weight: normal;
+    }
+    /* Sector sections */
+    .sector-weight,
+    .sector-marks {
+      border: 1px solid var(--input-border);
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 4px;
+    }
+    .sector-marks h3 {
+      margin-top: 0;
+    }
+    /* Buttons */
+    button {
+      padding: 0.5rem 1rem;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    #generate-sectors {
+      background-color: #4d90fe;
+      color: white;
+    }
+    #calculate-btn {
+      background-color: #34a853;
+      color: white;
+    }
+    #reset-btn {
+      background-color: #ea4335;
+      color: white;
+    }
+
+    /* ----- Results ----- */
+    #results {
+      max-width: 800px;
+      margin: 1rem auto;
+      padding: 1rem;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      background: var(--input-bg);
+    }
+    #results h2 {
+      margin-top: 0;
+    }
+
+    /* ----- Modal (Info) Styles ----- */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 100; /* On top */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+    }
+    .modal-content {
+      background-color: var(--input-bg);
+      margin: 10% auto;
+      padding: 1rem;
+      border: 1px solid var(--input-border);
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+      color: var(--text-color);
+      position: relative;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+    }
+    .close {
+      color: var(--text-color);
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* ----- Responsive Adjustments ----- */
+    @media (max-width: 600px) {
+      .switch {
+        width: 40px;
+        height: 22px;
+      }
+      .slider:before {
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        bottom: 3px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="mode-wrapper">
-    <span class="mode-label">Light/Dark Mode</span>
-    <label class="switch">
-      <input type="checkbox" id="themeToggle" />
-      <span class="slider round"></span>
-    </label>
-  </div>
-
-  <div class="container">
-    <h1>Grade Calculator</h1>
-    
-    <div id="step1">
-      <form id="initialForm">
-        <label for="sectors">How many grade sectors do you want? (1-100):</label>
-        <input type="number" id="sectors" name="sectors" min="1" max="100" required />
-
-        <label>Do you want each grade sector to have equal weight?</label>
-        <div class="radio-group">
-          <label for="equalYes">
-            <input type="radio" id="equalYes" name="equalWeight" value="y" checked />
-            Yes
-          </label>
-          <label for="equalNo">
-            <input type="radio" id="equalNo" name="equalWeight" value="n" />
-            No
-          </label>
-        </div>
-
-        <button type="submit">Continue</button>
-      </form>
-    </div>
-    
-    <div id="step2" class="hidden">
-      <form id="sectorsForm">
-        <div id="weightsSection" class="hidden">
-          <h2>Enter Weights for Each Sector</h2>
-          <div id="weightsInputs"></div>
-          <p class="hint">Enter weights for each sector (arbitrary units, will be normalized).</p>
-        </div>
-
-        <h2>Enter Marks for Each Sector</h2>
-        <div id="marksInputs"></div>
-
-        <button type="submit">Calculate Grades</button>
-      </form>
-    </div>
-    
-    <div id="result" class="hidden">
-      <h2>Your Calculated Grades</h2>
-      <p id="weightedGrade"></p>
-      <p id="equalGrade"></p>
-      <p id="simpleAverageGrade"></p>
-      <button id="restart">Restart</button>
+  <!-- Top Right Container: Logo & Theme Toggle -->
+  <div class="top-right">
+    <img src="logo.png" alt="Logo" id="logo" />
+    <div class="theme-toggle">
+      <label class="switch">
+        <input type="checkbox" id="theme-switch" />
+        <span class="slider"></span>
+      </label>
     </div>
   </div>
-  
-  <div id="angledText" class="angled-text"></div>
-  <a href="https://paypal.me/uribemax?country.x=CA&locale.x=en_US" id="paypalLink" class="paypal-link">paypal</a>
-  <script src="script.js"></script>
+
+  <!-- Header with Title, Info Button & Animated Angled Text -->
+  <header>
+    <h1 id="main-title">Grade Calculator</h1>
+    <button id="info-btn" class="info-btn" title="More Info">i</button>
+    <div id="angled-text"></div>
+  </header>
+
+  <!-- Hidden Cat Image (from cat.jpg) -->
+  <img
+    id="cat-image"
+    src="cat.jpg"
+    alt=""
+    style="display: none; max-width:300px; margin: 1rem auto;"
+  />
+
+  <!-- Main Form -->
+  <form id="grade-form">
+    <!-- Number of Sectors -->
+    <div class="form-group">
+      <label for="num-sectors">Number of grade sectors (1–100):</label>
+      <input type="number" id="num-sectors" name="num-sectors" min="1" max="100" required />
+    </div>
+
+    <!-- Weighting Option -->
+    <div class="form-group">
+      <label>Weighting:</label>
+      <label class="inline">
+        <input type="radio" name="weighting" value="equal" checked /> Equal Weight
+      </label>
+      <label class="inline">
+        <input type="radio" name="weighting" value="custom" /> Custom Weight
+      </label>
+    </div>
+
+    <!-- Custom Weights (hidden by default) -->
+    <div class="form-group" id="custom-weights-container" style="display: none;">
+      <p>Enter weights for each sector (arbitrary units; will be normalized):</p>
+      <div id="custom-weights"></div>
+    </div>
+
+    <!-- Marks for Each Sector -->
+    <div id="marks-container"></div>
+
+    <!-- Buttons -->
+    <button type="button" id="generate-sectors">Generate Sectors</button>
+    <button type="button" id="calculate-btn">Calculate Grades</button>
+    <button type="button" id="reset-btn">Restart</button>
+  </form>
+
+  <!-- Results Display -->
+  <div id="results" style="display: none;">
+    <h2>Results:</h2>
+    <p id="weighted-result"></p>
+    <p id="equal-result"></p>
+    <p id="simple-average-result"></p>
+  </div>
+
+  <!-- Info Modal -->
+  <div id="info-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Grade Types Explained</h2>
+      <p><strong>Weighted Final Grade:</strong> This method uses your custom weights for each sector. It takes into account the relative importance of each assignment or exam. Use this when different tasks are meant to contribute unequally to your final grade.</p>
+      <p><strong>Equal Weight Final Grade:</strong> Here, every sector contributes equally regardless of any custom weights. This method is simple and is ideal when all assignments are intended to have the same impact.</p>
+      <p><strong>Simple Average Final Grade:</strong> This is calculated by dividing the total achieved marks by the total maximum marks. It provides a raw average of performance but may not reflect differences in assignment importance.</p>
+      <p>Choose the method that best aligns with your course requirements and assessment policies.</p>
+    </div>
+  </div>
+
+  <!-- ----- JavaScript ----- -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      /* ----- Theme Management ----- */
+      const themeSwitch = document.getElementById("theme-switch");
+      function setTheme(theme) {
+        if (theme === "dark") {
+          document.body.classList.add("dark");
+          themeSwitch.checked = true;
+        } else {
+          document.body.classList.remove("dark");
+          themeSwitch.checked = false;
+        }
+        localStorage.setItem("theme", theme);
+      }
+      // Initialize theme based on localStorage or system preference
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        setTheme(savedTheme);
+      } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        setTheme("dark");
+      } else {
+        setTheme("light");
+      }
+      themeSwitch.addEventListener("change", function () {
+        setTheme(this.checked ? "dark" : "light");
+      });
+
+      /* ----- Random Angled Text ----- */
+      const angledText = document.getElementById("angled-text");
+      const messages = [
+        "Made by a zaga student!",
+        "Because some people don't understand grades!",
+        "BRRRRR!",
+        "Why did the chicken cross the road?",
+        "I was bored.",
+        "Do you also procrastinate?",
+        "If your checking if you can pass, you're alreaady cooked mg",
+        "It's easier if you ask your teacher to send out a markbook email ;)",
+        "Want to see my cat? Click me!"
+      ];
+      // Randomly choose one message
+      const chosenMessage = messages[Math.floor(Math.random() * messages.length)];
+      angledText.textContent = chosenMessage;
+
+      /* ----- Info Modal Handling ----- */
+      const infoBtn = document.getElementById("info-btn");
+      const infoModal = document.getElementById("info-modal");
+      const closeBtn = document.querySelector("#info-modal .close");
+
+      infoBtn.addEventListener("click", () => {
+        infoModal.style.display = "block";
+      });
+
+      closeBtn.addEventListener("click", () => {
+        infoModal.style.display = "none";
+      });
+
+      window.addEventListener("click", (event) => {
+        if (event.target === infoModal) {
+          infoModal.style.display = "none";
+        }
+      });
+
+      /* ----- Cat Image & Confetti Effect ----- */
+      const catImage = document.getElementById("cat-image");
+      function showCat() {
+        if (catImage.style.display === "none") {
+          catImage.style.display = "block";
+          // Trigger confetti effect
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+      }
+      // If the randomly chosen angled text is the cat message, add a click listener
+      if (chosenMessage === "Want to see my cat? Click me!") {
+        angledText.style.cursor = "pointer";
+        angledText.addEventListener("click", showCat);
+      }
+
+      /* ----- Weighting Option Toggle ----- */
+      const weightingRadios = document.getElementsByName("weighting");
+      weightingRadios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+          const customWeightsContainer = document.getElementById("custom-weights-container");
+          if (this.value === "custom") {
+            customWeightsContainer.style.display = "block";
+          } else {
+            customWeightsContainer.style.display = "none";
+          }
+        });
+      });
+
+      /* ----- Generate Sector Input Fields ----- */
+      const generateSectorsBtn = document.getElementById("generate-sectors");
+      generateSectorsBtn.addEventListener("click", function () {
+        const numSectors = parseInt(document.getElementById("num-sectors").value);
+        if (isNaN(numSectors) || numSectors < 1 || numSectors > 100) {
+          alert("Please enter a valid number of sectors between 1 and 100.");
+          return;
+        }
+        // Clear any previous inputs
+        document.getElementById("marks-container").innerHTML = "";
+        document.getElementById("custom-weights").innerHTML = "";
+
+        const weightingValue = document.querySelector('input[name="weighting"]:checked').value;
+        // Generate custom weight inputs if needed
+        if (weightingValue === "custom") {
+          const customWeightsDiv = document.getElementById("custom-weights");
+          for (let i = 0; i < numSectors; i++) {
+            const div = document.createElement("div");
+            div.classList.add("sector-weight");
+            div.innerHTML = `<label>Sector ${i + 1} weight:
+                  <input type="number" step="any" min="0" required />
+                </label>`;
+            customWeightsDiv.appendChild(div);
+          }
+        }
+        // Generate marks inputs for each sector
+        const marksContainer = document.getElementById("marks-container");
+        for (let i = 0; i < numSectors; i++) {
+          const div = document.createElement("div");
+          div.classList.add("sector-marks");
+          div.innerHTML = `
+                <h3>Sector ${i + 1}</h3>
+                <label>Max Mark:
+                  <input type="number" step="any" min="0" required />
+                </label>
+                <label>Achieved Mark:
+                  <input type="number" step="any" min="0" required />
+                </label>
+              `;
+          marksContainer.appendChild(div);
+        }
+      });
+
+      /* ----- Calculate Grades ----- */
+      const calculateBtn = document.getElementById("calculate-btn");
+      calculateBtn.addEventListener("click", function () {
+        const numSectors = parseInt(document.getElementById("num-sectors").value);
+        if (isNaN(numSectors) || numSectors < 1 || numSectors > 100) {
+          alert("Please enter a valid number of sectors between 1 and 100.");
+          return;
+        }
+        const weightingValue = document.querySelector('input[name="weighting"]:checked').value;
+        let weights = [];
+        if (weightingValue === "custom") {
+          const weightInputs = document.querySelectorAll("#custom-weights input");
+          weightInputs.forEach((input) => {
+            const w = parseFloat(input.value);
+            if (isNaN(w) || w < 0) {
+              alert("Please enter valid non-negative numbers for weights.");
+              throw new Error("Invalid weight input");
+            }
+            weights.push(w);
+          });
+          const totalWeight = weights.reduce((acc, cur) => acc + cur, 0);
+          if (totalWeight === 0) {
+            alert("Total weight cannot be zero.");
+            return;
+          }
+          weights = weights.map((w) => w / totalWeight);
+        } else {
+          // Equal weighting array (each sector gets the same weight)
+          weights = new Array(numSectors).fill(1 / numSectors);
+        }
+
+        // Gather marks for each sector
+        const marksDivs = document.querySelectorAll(".sector-marks");
+        let grades = [];
+        let totalAchieved = 0;
+        let totalMax = 0;
+        marksDivs.forEach((div, index) => {
+          const inputs = div.getElementsByTagName("input");
+          const maxMark = parseFloat(inputs[0].value);
+          const achievedMark = parseFloat(inputs[1].value);
+          if (isNaN(maxMark) || maxMark <= 0 || isNaN(achievedMark) || achievedMark < 0) {
+            alert(`Please enter valid marks for sector ${index + 1}.`);
+            throw new Error("Invalid marks input");
+          }
+          const grade = achievedMark / maxMark;
+          grades.push(grade);
+          totalAchieved += achievedMark;
+          totalMax += maxMark;
+        });
+
+        // Calculate final grades
+        let weightedFinalGrade = null;
+        if (weightingValue === "custom") {
+          weightedFinalGrade = grades.reduce((acc, grade, index) => acc + grade * weights[index], 0) * 100;
+        }
+        const equalFinalGrade = grades.reduce((acc, grade) => acc + grade * (1 / numSectors), 0) * 100;
+        const simpleAverageGrade = (totalAchieved / totalMax) * 100;
+
+        // Display results
+        document.getElementById("results").style.display = "block";
+        document.getElementById("weighted-result").textContent =
+          weightedFinalGrade !== null
+            ? `Weighted Final Grade: ${weightedFinalGrade.toFixed(2)}% (based on your assigned weights)`
+            : `Weighted Final Grade: Not applicable (equal weights used)`;
+        document.getElementById("equal-result").textContent =
+          `Equal Weight Final Grade: ${equalFinalGrade.toFixed(2)}% (assuming all sectors contribute equally)`;
+        document.getElementById("simple-average-result").textContent =
+          `Simple Average Final Grade: ${simpleAverageGrade.toFixed(2)}% (total achieved marks divided by total possible marks)`;
+      });
+
+      /* ----- Restart / Reset ----- */
+      const resetBtn = document.getElementById("reset-btn");
+      resetBtn.addEventListener("click", function () {
+        document.getElementById("grade-form").reset();
+        document.getElementById("marks-container").innerHTML = "";
+        document.getElementById("custom-weights").innerHTML = "";
+        document.getElementById("results").style.display = "none";
+      });
+    });
+  </script>
 </body>
 </html>
